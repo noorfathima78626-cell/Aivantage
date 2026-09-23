@@ -1,0 +1,20 @@
+Optional small aptitude-results-only change: replace the existing Practice integrity signals card with a grouped count by signal type. This is not required for detection itself.
+
+{report.integrityEvents?.length ? (
+  <>
+    {Object.entries(report.integrityEvents.reduce((counts, event) => {
+      counts[event.type] = (counts[event.type] || 0) + 1
+      return counts
+    }, {})).map(([type, count]) => (
+      <p key={type} style={{ fontSize: 14, lineHeight: 1.5, margin: '0 0 6px' }}>
+        <strong>{type === 'phone' ? 'Phone' : type === 'person' ? 'Multiple people' : type === 'focus' ? 'Focus/fullscreen' : 'Audio'}</strong>
+        : {count} signal{count === 1 ? '' : 's'}
+      </p>
+    ))}
+    <p style={{ fontSize: 13, lineHeight: 1.5, margin: '10px 0 0', color: 'var(--ink-soft)' }}>
+      These are automated indicators for review, not proof of cheating.
+    </p>
+  </>
+) : (
+  <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>No unusual integrity signals were logged.</p>
+)}

@@ -1,0 +1,12 @@
+{
+  "name": "aivantage-dev",
+  "private": true,
+  "description": "Root-level dev orchestrator - runs frontend, backend, and AI engine together with one command. Not part of any individual service's own package.json.",
+  "scripts": {
+    "dev:mac": "concurrently -n FRONTEND,BACKEND,AI-ENGINE -c blue,green,magenta \"npm --prefix frontend/frontend run dev\" \"cd backend && /usr/local/apache-maven/bin/mvn spring-boot:run\" \"cd ai-engine && venv/bin/python -m uvicorn main:app --reload --port 8000\"",
+    "dev:win": "concurrently -n FRONTEND,BACKEND,AI-ENGINE -c blue,green,magenta \"npm --prefix frontend/frontend run dev\" \"cd backend && mvn spring-boot:run\" \"cd ai-engine && venv\\Scripts\\python -m uvicorn main:app --reload --port 8000\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
