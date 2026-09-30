@@ -4,7 +4,7 @@ import java.util.List;
 
 public class SessionDtos {
 
-    public record CreateSessionRequest(String subject, String difficulty) {}
+    public record CreateSessionRequest(String subject, Integer round, String interviewType) {}
 
     public record QuestionView(Long id, String text, Integer order) {}
 
@@ -29,5 +29,5 @@ public class SessionDtos {
     ) {}
 
     public record AnswerReview(Long questionId, String questionText, String userAnswer,
-                                Double score, String feedback) {}
+                               Double score, String feedback) {}
 }

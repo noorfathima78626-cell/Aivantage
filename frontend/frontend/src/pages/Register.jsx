@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { authApi, MOCK_MODE } from '../api/api.js'
+import { authApi } from '../api/api.js'
 import { mockRegister } from '../api/mockAuthStore.js'
 import { useAuth } from '../context/AuthContext.jsx'
+const MOCK_MODE = true;
 
 export default function Register() {
   const navigate = useNavigate()

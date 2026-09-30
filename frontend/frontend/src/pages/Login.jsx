@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi, MOCK_MODE } from '../api/api.js'
 import { mockLogin } from '../api/mockAuthStore.js'
@@ -11,7 +11,6 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [showForgotMsg, setShowForgotMsg] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated) navigate('/dashboard', { replace: true })
@@ -67,17 +66,9 @@ export default function Login() {
           <div className="field">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <label style={{ marginBottom: 0 }}>Password</label>
-              <button
-                type="button"
-                onClick={() => setShowForgotMsg((v) => !v)}
-                style={{
-                  background: 'none', border: 'none', padding: 0, marginBottom: 6,
-                  color: 'var(--accent)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                  textTransform: 'none',
-                }}
-              >
+              <Link to="/forgot-password" style={{ color: 'var(--accent)', fontSize: 13, fontWeight: 500 }}>
                 Forgot password?
-              </button>
+              </Link>
             </div>
             <div style={{ position: 'relative' }}>
               <input
@@ -100,11 +91,6 @@ export default function Login() {
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
-            {showForgotMsg && (
-              <p style={{ fontSize: 13, color: 'var(--ink-soft)', marginTop: 6 }}>
-                Password resets aren't wired up yet for this build — contact your team to reset it manually in the database for now.
-              </p>
-            )}
           </div>
 
           {error && <p className="error-text">{error}</p>}

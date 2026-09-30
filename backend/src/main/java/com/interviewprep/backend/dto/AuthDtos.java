@@ -17,4 +17,8 @@ public class AuthDtos {
     public record VerifyOtpRequest(String phone, String code) {}
 
     public record OtpActionResponse(boolean success, String message) {}
+
+    public record ForgotPasswordRequest(String email) {}
+
+    public record ResetPasswordRequest(String email, String otp, String newPassword) {}
 }

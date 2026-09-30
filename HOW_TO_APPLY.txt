@@ -1,0 +1,13 @@
+AIVANTAGE STABILIZATION PATCH
+
+This patch overlays only the listed files; it does not include node_modules, target, or your large project assets.
+
+1. BACK UP your current project folder first.
+2. Unzip this file into the project root and allow files to merge/replace.
+3. The included dev-mac.sh starts Java, Python and Vite together.
+4. If your current frontend/package.json already has dev:mac, keep it. If not, from frontend/frontend run:
+   npm pkg set scripts.dev:mac="bash ../../dev-mac.sh"
+5. Then run:
+   npm run dev:mac
+
+The backend session request now accepts interviewType. Aptitude sessions do not depend on technical question generation.

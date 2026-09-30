@@ -24,19 +24,22 @@ public class SessionController {
     }
 
     @PostMapping("/{id}/answer")
-    public Map<String, Boolean> answer(@PathVariable("id") Long sessionId,
-                                        @RequestBody AnswerRequest request) {
-        sessionService.recordAnswer(sessionId, request);
+    public Map<String, Boolean> answer(@AuthenticationPrincipal Long userId,
+                                       @PathVariable("id") Long sessionId,
+                                       @RequestBody AnswerRequest request) {
+        sessionService.recordAnswer(userId, sessionId, request);
         return Map.of("ack", true);
     }
 
     @PostMapping("/{id}/complete")
-    public SessionReportResponse complete(@PathVariable("id") Long sessionId) {
-        return sessionService.completeSession(sessionId);
+    public SessionReportResponse complete(@AuthenticationPrincipal Long userId,
+                                           @PathVariable("id") Long sessionId) {
+        return sessionService.completeSession(userId, sessionId);
     }
 
     @GetMapping("/{id}/report")
-    public SessionReportResponse report(@PathVariable("id") Long sessionId) {
-        return sessionService.getReport(sessionId);
+    public SessionReportResponse report(@AuthenticationPrincipal Long userId,
+                                        @PathVariable("id") Long sessionId) {
+        return sessionService.getReport(userId, sessionId);
     }
 }

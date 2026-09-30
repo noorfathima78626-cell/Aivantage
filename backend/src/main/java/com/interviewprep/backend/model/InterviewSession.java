@@ -19,8 +19,16 @@ public class InterviewSession {
     @Column(nullable = false, length = 80)
     private String subject;
 
+    // Kept for compatibility with the existing questions table. Values are
+    // derived internally from Round 1/2/3 and are no longer shown to users.
     @Column(nullable = false, length = 20)
     private String difficulty;
+
+    @Column(name = "round_number", nullable = false)
+    private Integer roundNumber;
+
+    @Column(name = "interview_type", nullable = false, length = 30)
+    private String interviewType;
 
     @Column(length = 20)
     private String status = "IN_PROGRESS";

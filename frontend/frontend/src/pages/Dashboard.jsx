@@ -9,40 +9,80 @@ const SUBJECTS = [
   'Computer Networks', 'Java', 'Python', 'Web Development', 'SQL',
   'Machine Learning', 'HR / Behavioral',
 ]
-const DIFFICULTIES = ['EASY', 'MEDIUM', 'HARD']
+
 const INTERVIEW_TYPES = ['Aptitude', 'One-on-One']
+
+const ROUND_INFO = [
+  {
+    round: 1,
+    title: 'Round 1',
+    subtitle: 'Foundation & core interview',
+    description: 'Core concepts and practical reasoning. Not a beginner-only round.',
+  },
+  {
+    round: 2,
+    title: 'Round 2',
+    subtitle: 'Professional & harder',
+    description: 'Deeper questions that test how you apply concepts in real situations.',
+  },
+  {
+    round: 3,
+    title: 'Round 3',
+    subtitle: 'Advanced & deep',
+    description: 'Advanced reasoning, trade-offs, design and deeper technical thinking.',
+  },
+]
+
+const DEFAULT_PROGRESS = [
+  { round: 1, unlocked: true, completed: false },
+  { round: 2, unlocked: false, completed: false },
+  { round: 3, unlocked: false, completed: false },
+]
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { token } = useAuth()
   const [resumeFile, setResumeFile] = useState(null)
-  const [uploadStatus, setUploadStatus] = useState('idle') // idle | uploading | done
+  const [uploadStatus, setUploadStatus] = useState('idle')
   const [subject, setSubject] = useState(SUBJECTS[0])
-  const [difficulty, setDifficulty] = useState('MEDIUM')
-  const [difficultyChosen, setDifficultyChosen] = useState(false)
-  const [interviewType, setInterviewType] = useState(null)
-  const [starting, setStarting] = useState(false)
+  const [interviewType, setInterviewType] = useState('One-on-One')
+  const [round, setRound] = useState(null)
+  const [progress, setProgress] = useState(DEFAULT_PROGRESS)
+  const [progressLoading, setProgressLoading] = useState(false)
   const [error, setError] = useState('')
-  const [deviceWarning, setDeviceWarning] = useState('')
 
-  // Lightweight replacement for the old separate camera-check page: just a
-  // heads-up banner, not a page or a gate that blocks starting.
   useEffect(() => {
     let cancelled = false
-    navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
-      .then((testStream) => {
-        testStream.getTracks().forEach((t) => t.stop()) // only checking, not using it yet
-        if (!cancelled) setDeviceWarning('')
-      })
-      .catch(() => {
-        if (!cancelled) setDeviceWarning('Camera and/or microphone not detected. Turn them on before starting - the session needs both for behavior analysis.')
-      })
-    return () => { cancelled = true }
-  }, [])
 
-  function chooseDifficulty(d) {
-    setDifficulty(d)
-    setDifficultyChosen(true)
+    async function loadProgress() {
+      if (MOCK_MODE || !token) {
+        setProgress(DEFAULT_PROGRESS)
+        return
+      }
+      setProgressLoading(true)
+      setError('')
+      try {
+        const result = await sessionApi.getProgress(token, subject, interviewType)
+        if (!cancelled) setProgress(result.rounds || DEFAULT_PROGRESS)
+      } catch (err) {
+        if (!cancelled) {
+          setProgress(DEFAULT_PROGRESS)
+          setError(err.message || 'Could not load round progress.')
+        }
+      } finally {
+        if (!cancelled) setProgressLoading(false)
+      }
+    }
+
+    setRound(null)
+    loadProgress()
+    return () => { cancelled = true }
+  }, [subject, interviewType, token])
+
+  function chooseRound(item) {
+    if (!item.unlocked) return
+    setRound(item.round)
+    setError('')
   }
 
   async function handleUpload(e) {
@@ -51,64 +91,39 @@ export default function Dashboard() {
     setResumeFile(file)
     setUploadStatus('uploading')
     try {
-      if (MOCK_MODE) {
-        await new Promise((r) => setTimeout(r, 700))
-      } else {
-        await resumeApi.upload(token, file)
-      }
+      if (MOCK_MODE) await new Promise((r) => setTimeout(r, 700))
+      else await resumeApi.upload(token, file)
       setUploadStatus('done')
     } catch {
       setUploadStatus('idle')
+      setError('Resume upload failed. You can continue without a resume.')
     }
   }
 
-  // Camera/speaker PreCheck page was removed from the flow - session is
-  // created directly here now, and the camera inside the session page
-  // itself still starts normally (still needed for eye contact/hand
-  // movement analysis - only the separate check-first screen is gone).
-  async function handleStart() {
-    setStarting(true)
-    setError('')
-    try {
-      let sessionId
-      let questions
-      if (MOCK_MODE) {
-        await new Promise((r) => setTimeout(r, 500))
-        sessionId = 'demo-session-1'
-      } else {
-        const res = await sessionApi.create(token, { subject, difficulty, interviewType })
-        sessionId = res.sessionId
-        questions = res.questions
-      }
-      navigate(interviewType === 'Aptitude' ? `/aptitude/${sessionId}` : `/session/${sessionId}`, { state: { subject, difficulty, interviewType, questions } })
-    } catch (err) {
-      console.error('Failed to start session:', err)
-      setError(err.message || 'Could not start the session - is the backend running?')
-    } finally {
-      setStarting(false)
+  function handleStart() {
+    if (!round) {
+      setError('Select an unlocked round first.')
+      return
     }
+    navigate('/precheck', { state: { subject, round, interviewType } })
   }
 
   return (
     <div className="page-shell">
       <Navbar />
       <main className="dashboard-shell">
-        <div className="dashboard-hero"><div><span className="eyebrow">AI-POWERED INTERVIEW PRACTICE</span><h1>Build confidence before the real interview.</h1>
-        <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
-          Upload your resume, pick a subject and difficulty, and we'll tailor the questions.
-        </p></div><span className="hero-badge">● Analysis enabled</span></div>
+        <div className="dashboard-hero">
+          <div>
+            <span className="eyebrow">AI-POWERED INTERVIEW PRACTICE</span>
+            <h1>Build confidence before the real interview.</h1>
+            <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
+              Choose a subject, interview mode and progressive round. Complete each round to unlock the next one.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><button className="btn-secondary" onClick={() => navigate('/history')}>Practice history</button><span className="hero-badge">● Progressive rounds enabled</span></div>
+        </div>
 
         <div className="setup-card card" style={{ marginTop: 24 }}>
-          {deviceWarning && (
-            <div style={{
-              background: 'rgba(230,162,60,0.12)', border: '1px solid rgba(230,162,60,0.35)',
-              borderRadius: 10, padding: '12px 16px', marginBottom: 20,
-              display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#8a5a12',
-            }}>
-              <span style={{ fontSize: 18 }}>⚠️</span>
-              <span>{deviceWarning}</span>
-            </div>
-          )}
           <label>Resume</label>
           <div className="upload-zone" style={{
             border: '1.5px dashed var(--border)', borderRadius: 10, padding: 24,
@@ -130,48 +145,69 @@ export default function Dashboard() {
           </div>
 
           <div className="field">
-            <label>Difficulty</label>
+            <label>Interview type</label>
             <div style={{ display: 'flex', gap: 10 }}>
-              {DIFFICULTIES.map((d) => (
+              {INTERVIEW_TYPES.map((type) => (
                 <button
-                  key={d}
+                  key={type}
                   type="button"
-                  onClick={() => chooseDifficulty(d)}
-                  className={difficultyChosen && difficulty === d ? 'btn-primary' : 'btn-secondary'}
+                  onClick={() => setInterviewType(type)}
+                  className={interviewType === type ? 'btn-primary' : 'btn-secondary'}
                   style={{ flex: 1 }}
                 >
-                  {d[0] + d.slice(1).toLowerCase()}
+                  {type}
                 </button>
               ))}
             </div>
           </div>
 
-          {difficultyChosen && (
-            <div className="field">
-              <label>Interview type</label>
-              <div style={{ display: 'flex', gap: 10 }}>
-                {INTERVIEW_TYPES.map((t) => (
+          <div className="field">
+            <label>Interview round</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+              {ROUND_INFO.map((info) => {
+                const state = progress.find((item) => item.round === info.round) || {
+                  round: info.round,
+                  unlocked: info.round === 1,
+                  completed: false,
+                }
+                const locked = !state.unlocked
+                const selected = round === info.round
+                return (
                   <button
-                    key={t}
+                    key={info.round}
                     type="button"
-                    onClick={() => setInterviewType(t)}
-                    className={interviewType === t ? 'btn-primary' : 'btn-secondary'}
-                    style={{ flex: 1 }}
+                    onClick={() => chooseRound(state)}
+                    disabled={locked || progressLoading}
+                    className={selected ? 'btn-primary' : 'btn-secondary'}
+                    style={{
+                      minHeight: 118,
+                      textAlign: 'left',
+                      opacity: locked ? 0.55 : 1,
+                      cursor: locked ? 'not-allowed' : 'pointer',
+                    }}
                   >
-                    {t}
+                    <strong style={{ display: 'block', marginBottom: 6 }}>
+                      {locked ? '🔒 ' : state.completed ? '✓ ' : ''}{info.title}
+                    </strong>
+                    <span style={{ display: 'block', fontSize: 12, fontWeight: 700 }}>{info.subtitle}</span>
+                    <small style={{ display: 'block', marginTop: 7, lineHeight: 1.35 }}>
+                      {state.completed ? 'Completed — you can practice this round again.' : info.description}
+                    </small>
                   </button>
-                ))}
-              </div>
+                )
+              })}
             </div>
-          )}
+          </div>
 
-          {error && <p className="error-text" style={{ marginTop: 8 }}>{error}</p>}
+          {error && <p className="error-text" style={{ marginTop: 12 }}>{error}</p>}
 
           <button
-            className="btn-primary" style={{ width: '100%', marginTop: 8 }}
-            onClick={handleStart} disabled={!difficultyChosen || !interviewType || starting}
+            className="btn-primary"
+            style={{ width: '100%', marginTop: 8 }}
+            onClick={handleStart}
+            disabled={!round || progressLoading}
           >
-            {starting ? 'Starting session…' : 'Start session →'}
+            {progressLoading ? 'Loading round progress…' : 'Continue to camera check →'}
           </button>
         </div>
       </main>

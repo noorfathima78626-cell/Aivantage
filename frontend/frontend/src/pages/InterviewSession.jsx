@@ -20,7 +20,7 @@ export default function InterviewSession() {
   const { token } = useAuth()
 
   const selectedSubject = location.state?.subject || 'General'
-  const selectedDifficulty = location.state?.difficulty || 'MEDIUM'
+  const selectedRound = Number(location.state?.round || 1)
   const sessionQuestions = Array.isArray(location.state?.questions) && location.state.questions.length
     ? location.state.questions.map((q, index) => ({
         id: q.id ?? q.questionId ?? index + 1,
@@ -39,7 +39,6 @@ export default function InterviewSession() {
   const [metrics, setMetrics] = useState({ eyeContact: 0, handMovement: 0, paceWpm: 0 })
   const [stream, setStream] = useState(null)
   const [analysisStatus, setAnalysisStatus] = useState('Connecting AI analysis…')
-  const paceTimerRef = useRef(null)
   const recognitionRef = useRef(null)
   const transcriptRef = useRef('')
   const listeningStartedAtRef = useRef(null)
@@ -126,7 +125,6 @@ export default function InterviewSession() {
       for (let i = 0; i < event.results.length; i += 1) text += event.results[i][0].transcript
       transcriptRef.current = text
       setTranscript(text)
-      updatePace()
     }
 
     recognition.onend = () => {
@@ -139,8 +137,6 @@ export default function InterviewSession() {
     recognitionRef.current = recognition
     recognition.start()
     setListening(true)
-    window.clearInterval(paceTimerRef.current)
-    paceTimerRef.current = window.setInterval(updatePace, 900)
   }
 
   function updatePace() {
@@ -155,8 +151,6 @@ export default function InterviewSession() {
 
   function stopListening() {
     recognitionRef.current?.stop()
-    window.clearInterval(paceTimerRef.current)
-    paceTimerRef.current = null
     setListening(false)
     updatePace()
   }
@@ -197,8 +191,6 @@ export default function InterviewSession() {
     if (!listening) startListening()
   }
 
-  useEffect(() => () => window.clearInterval(paceTimerRef.current), [])
-
   return (
     <div className="page-shell interview-page bright-interview-page">
       <Navbar />
@@ -219,15 +211,14 @@ export default function InterviewSession() {
           </div>
 
           <div className="question-counter premium-counter">
-            <span>{selectedSubject} • {selectedDifficulty}</span>
+            <span>{selectedSubject} • Round {selectedRound}</span>
             <strong>{qIndex + 1}<small> / {questions.length}</small></strong>
           </div>
         </header>
 
-        <div className="interview-primary-view">
-        <section className="interview-grid premium-grid interview-viewport-grid">
+        <section className="interview-grid premium-grid">
           <div className="interview-panel-wrap animated-interviewer-wrap">
-            <AvatarPanel text={avatarText} onDone={handleAvatarDone} />
+            <AvatarPanel text={avatarText} onDone={handleAvatarDone} authToken={token} />
           </div>
 
           <div className="camera-panel professional-card">
@@ -260,7 +251,7 @@ export default function InterviewSession() {
           <div className="question-card-head">
             <div className="mini-interviewer">✦</div>
             <div>
-              <span className="eyebrow">LIVE INTERVIEW • ALEX MORGAN</span>
+              <span className="eyebrow">AI INTERVIEWER • ALEX MORGAN</span>
               <h2>Current question</h2>
             </div>
             <div className="question-tag">{selectedSubject}</div>
@@ -306,7 +297,6 @@ export default function InterviewSession() {
             </button>
           </div>
         </section>
-        </div>
 
         <section className="bottom-interview-grid">
           <div className="performance-area professional-card">

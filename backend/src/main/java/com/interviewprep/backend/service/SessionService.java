@@ -20,6 +20,7 @@ public class SessionService {
     private final SessionReportRepository sessionReportRepository;
     private final ResumeRepository resumeRepository;
     private final AiEngineClient aiEngineClient;
+    private final InterviewRoundProgressService roundProgressService;
 
     public SessionService(InterviewSessionRepository sessionRepository,
                            QuestionRepository questionRepository,
@@ -27,7 +28,8 @@ public class SessionService {
                            SessionMetricRepository sessionMetricRepository,
                            SessionReportRepository sessionReportRepository,
                            ResumeRepository resumeRepository,
-                           AiEngineClient aiEngineClient) {
+                           AiEngineClient aiEngineClient,
+                           InterviewRoundProgressService roundProgressService) {
         this.sessionRepository = sessionRepository;
         this.questionRepository = questionRepository;
         this.sessionQuestionRepository = sessionQuestionRepository;
@@ -35,16 +37,27 @@ public class SessionService {
         this.sessionReportRepository = sessionReportRepository;
         this.resumeRepository = resumeRepository;
         this.aiEngineClient = aiEngineClient;
+        this.roundProgressService = roundProgressService;
     }
 
     public CreateSessionResponse createSession(Long userId, CreateSessionRequest req) {
+        if (req == null) throw new IllegalArgumentException("Session request is required");
+        int round = req.round() == null ? 1 : req.round();
+        String interviewType = req.interviewType() == null || req.interviewType().isBlank()
+                ? "One-on-One" : req.interviewType();
+        String difficulty = roundToDifficulty(round);
+
+        roundProgressService.ensureRoundCanStart(userId, req.subject(), interviewType, round);
+
         InterviewSession session = new InterviewSession();
         session.setUserId(userId);
         session.setSubject(req.subject());
-        session.setDifficulty(req.difficulty());
+        session.setDifficulty(difficulty);
+        session.setRoundNumber(round);
+        session.setInterviewType(interviewType);
         session = sessionRepository.save(session);
 
-        List<Question> questions = generateOrFallbackQuestions(userId, req.subject(), req.difficulty());
+        List<Question> questions = generateOrFallbackQuestions(userId, req.subject(), difficulty);
 
         List<QuestionView> views = new ArrayList<>();
         int order = 1;
@@ -90,6 +103,11 @@ public class SessionService {
         }
 
         List<Question> fallback = questionRepository.findBySubjectAndDifficulty(subject, difficulty);
+        if (fallback.isEmpty() && "ADVANCED".equals(difficulty)) {
+            // Existing installations may not have ADVANCED rows yet. Use the
+            // HARD bank as a safe offline fallback for Round 3.
+            fallback = questionRepository.findBySubjectAndDifficulty(subject, "HARD");
+        }
         if (fallback.isEmpty()) {
             throw new IllegalStateException(
                     "No questions available for " + subject + "/" + difficulty +
@@ -99,7 +117,8 @@ public class SessionService {
         return fallback.stream().limit(5).collect(Collectors.toList());
     }
 
-    public void recordAnswer(Long sessionId, AnswerRequest req) {
+    public void recordAnswer(Long userId, Long sessionId, AnswerRequest req) {
+        requireOwnedSession(userId, sessionId);
         SessionQuestion sq = sessionQuestionRepository.findBySessionIdOrderByQuestionOrderAsc(sessionId).stream()
                 .filter(x -> x.getQuestionId().equals(req.questionId()))
                 .findFirst()
@@ -115,7 +134,11 @@ public class SessionService {
                     Arrays.asList(question.getIdealAnswerKeywords().split(","));
             var result = aiEngineClient.evaluateAnswer(question.getQuestionText(), req.answerText(), keywords);
             score = ((Number) result.get("score")).doubleValue();
-            feedback = (String) result.get("feedback");
+            feedback = (String) result.getOrDefault("feedback", "Answer evaluated.");
+            Object suggestion = result.get("suggestion");
+            if (suggestion != null && !String.valueOf(suggestion).isBlank()) {
+                feedback = feedback + " Suggestion: " + suggestion;
+            }
         } catch (Exception e) {
             // Fallback heuristic: crude keyword overlap so the flow still works offline/AI-down.
             List<String> keywords = question.getIdealAnswerKeywords() == null ? List.of() :
@@ -133,9 +156,8 @@ public class SessionService {
         sessionQuestionRepository.save(sq);
     }
 
-    public SessionReportResponse completeSession(Long sessionId) {
-        InterviewSession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    public SessionReportResponse completeSession(Long userId, Long sessionId) {
+        InterviewSession session = requireOwnedSession(userId, sessionId);
 
         List<SessionQuestion> answers = sessionQuestionRepository.findBySessionIdOrderByQuestionOrderAsc(sessionId);
         double overallScore = answers.stream()
@@ -178,13 +200,13 @@ public class SessionService {
         report.setStrengths(strengths);
         report.setAreasToImprove(areasToImprove);
         sessionReportRepository.save(report);
+        roundProgressService.markCompleted(userId, session.getSubject(), session.getInterviewType(), session.getRoundNumber());
 
         return toReportResponse(session, report, answers);
     }
 
-    public SessionReportResponse getReport(Long sessionId) {
-        InterviewSession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    public SessionReportResponse getReport(Long userId, Long sessionId) {
+        InterviewSession session = requireOwnedSession(userId, sessionId);
         SessionReport report = sessionReportRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new IllegalStateException("Session not completed yet"));
         List<SessionQuestion> answers = sessionQuestionRepository.findBySessionIdOrderByQuestionOrderAsc(sessionId);
@@ -206,6 +228,24 @@ public class SessionService {
                 report.getDominantExpression(), report.getSummary(), report.getStrengths(),
                 report.getAreasToImprove(), reviews
         );
+    }
+
+    private InterviewSession requireOwnedSession(Long userId, Long sessionId) {
+        InterviewSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        if (!Objects.equals(session.getUserId(), userId)) {
+            throw new IllegalArgumentException("You do not have access to this session");
+        }
+        return session;
+    }
+
+    private String roundToDifficulty(int round) {
+        return switch (round) {
+            case 1 -> "MEDIUM";
+            case 2 -> "HARD";
+            case 3 -> "ADVANCED";
+            default -> throw new IllegalArgumentException("Round must be 1, 2, or 3");
+        };
     }
 
     private double avg(List<SessionMetric> metrics, java.util.function.Function<SessionMetric, Double> f) {

@@ -1,29 +1,51 @@
-"""
-Keyword-overlap scoring (MVP). Enough to give directional feedback without
-needing an LLM call. Upgrade path: embed both the answer and an ideal
-answer with a sentence-transformer and score by cosine similarity, or call
-an LLM to grade - keep the same {score, feedback} return shape either way.
-"""
+"""Deterministic answer evaluation with useful matched/missed feedback."""
+
+import re
+
+
+def _normalise(text: str) -> str:
+    return re.sub(r"[^a-z0-9+#. ]+", " ", (text or "").lower())
 
 
 def evaluate_answer(question_text: str, answer_text: str, ideal_keywords: list[str]) -> dict:
-    answer_lower = (answer_text or "").lower()
-    ideal_keywords = [k.strip().lower() for k in (ideal_keywords or []) if k.strip()]
+    answer = _normalise(answer_text)
+    keywords = [k.strip() for k in (ideal_keywords or []) if k and k.strip()]
+    if not answer.strip():
+        return {
+            "score": 0.0,
+            "feedback": "No answer was captured. Speak clearly and give a structured answer.",
+            "matchedKeywords": [],
+            "missedKeywords": keywords,
+            "suggestion": "Use a simple structure: definition → explanation → example → conclusion.",
+        }
+    if not keywords:
+        return {
+            "score": 60.0,
+            "feedback": "An answer was captured, but this question has no configured scoring keywords.",
+            "matchedKeywords": [], "missedKeywords": [],
+            "suggestion": "Add a concrete example and explain why your approach works.",
+        }
 
-    if not ideal_keywords:
-        return {"score": 50.0, "feedback": "No scoring keywords configured for this question - reviewed manually."}
+    matched = [k for k in keywords if _normalise(k) in answer]
+    missed = [k for k in keywords if _normalise(k) not in answer]
+    coverage = len(matched) / len(keywords)
+    length_bonus = 5 if len(answer.split()) >= 35 else 0
+    score = round(min(100.0, coverage * 90 + length_bonus), 1)
 
-    hit = [k for k in ideal_keywords if k in answer_lower]
-    missed = [k for k in ideal_keywords if k not in answer_lower]
-    score = round((len(hit) / len(ideal_keywords)) * 100, 1)
-
-    if not answer_text or not answer_text.strip():
-        feedback = "No answer was captured - make sure to speak clearly into the mic."
-    elif score >= 80:
-        feedback = "Strong answer - covered the key points clearly."
+    if score >= 80:
+        feedback = "Strong answer. You covered most of the expected concepts clearly."
+        suggestion = "Add a short real-world example to make the answer even stronger."
     elif score >= 50:
-        feedback = f"Good start, but missed: {', '.join(missed)}."
+        feedback = "Good foundation, but some important interview points were missing: " + ", ".join(missed) + "."
+        suggestion = "Revisit the missed concepts and explain how they affect a practical implementation."
     else:
-        feedback = f"This answer missed most of the key points, including: {', '.join(missed)}. Revisit this topic."
+        feedback = "The answer missed several expected concepts: " + ", ".join(missed) + "."
+        suggestion = "Start with the core definition, then explain the main mechanism and give one example."
 
-    return {"score": score, "feedback": feedback}
+    return {
+        "score": score,
+        "feedback": feedback,
+        "matchedKeywords": matched,
+        "missedKeywords": missed,
+        "suggestion": suggestion,
+    }

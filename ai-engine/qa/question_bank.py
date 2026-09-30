@@ -8,45 +8,15 @@ BANK = {
         {"text": "What is the time complexity of binary search, and why?", "keywords": ["log n", "sorted", "divide", "half"]},
         {"text": "Explain the difference between an array and a linked list.", "keywords": ["contiguous", "memory", "pointer", "insertion", "access"]},
         {"text": "What is a stack and where would you use one?", "keywords": ["LIFO", "push", "pop", "function calls", "undo"]},
-        {"text": "How would you solve Two Sum - finding two numbers in an array that add up to a target?", "keywords": ["hash map", "complement", "O(n)", "single pass"]},
-        {"text": "How would you check if an array contains duplicates (Contains Duplicate)?", "keywords": ["hash set", "unique", "O(n)", "seen"]},
-        {"text": "How would you determine if two strings are anagrams of each other (Valid Anagram)?", "keywords": ["frequency", "character count", "sort", "hash map"]},
-        {"text": "Walk through solving Best Time to Buy and Sell Stock - maximizing profit from one transaction.", "keywords": ["min price", "one pass", "profit", "O(n)"]},
-        {"text": "How would you solve Climbing Stairs - counting distinct ways to reach the top?", "keywords": ["fibonacci", "dynamic programming", "recurrence", "memoization"]},
-        {"text": "Explain how you would find the Maximum Subarray sum (Kadane's Algorithm).", "keywords": ["kadane", "running sum", "dynamic programming", "O(n)"]},
-        {"text": "How would you check if a string is a Valid Palindrome, ignoring non-alphanumeric characters?", "keywords": ["two pointers", "left", "right", "alphanumeric"]},
-        {"text": "How would you merge two sorted linked lists into one sorted list?", "keywords": ["pointer", "dummy node", "merge", "linked list"]},
-        {"text": "How would you reverse a linked list, iteratively or recursively?", "keywords": ["previous", "next", "pointer", "iterative", "recursive"]},
     ],
     ("DSA", "MEDIUM"): [
         {"text": "How would you detect a cycle in a linked list?", "keywords": ["fast", "slow", "pointer", "floyd", "cycle"]},
         {"text": "Explain how a hash map achieves average O(1) lookup.", "keywords": ["hash function", "bucket", "collision", "load factor"]},
         {"text": "How would you find the first non-repeating character in a string efficiently?", "keywords": ["hash map", "frequency", "two pass", "O(n)"]},
-        {"text": "How would you group a list of strings into Anagrams (Group Anagrams)?", "keywords": ["hash map", "sorted key", "grouping", "character count"]},
-        {"text": "How would you find the Top K Frequent Elements in an array?", "keywords": ["heap", "bucket sort", "frequency map", "priority queue"]},
-        {"text": "How would you compute Product of Array Except Self without using division?", "keywords": ["prefix", "suffix", "running product", "O(n)"]},
-        {"text": "How would you find the Longest Substring Without Repeating Characters?", "keywords": ["sliding window", "hash set", "two pointers", "window"]},
-        {"text": "Walk through solving 3Sum - finding all unique triplets that sum to zero.", "keywords": ["sort", "two pointers", "skip duplicates", "triplet"]},
-        {"text": "How would you solve Container With Most Water using two pointers?", "keywords": ["two pointers", "width", "height", "greedy"]},
-        {"text": "How would you solve House Robber - maximizing loot without robbing adjacent houses?", "keywords": ["dynamic programming", "adjacent", "recurrence", "memoization"]},
-        {"text": "How would you search a target value in a Rotated Sorted Array?", "keywords": ["binary search", "pivot", "rotated", "log n"]},
-        {"text": "How would you count the Number of Islands in a 2D grid?", "keywords": ["BFS", "DFS", "grid", "visited", "flood fill"]},
-        {"text": "Explain how you would detect if a course schedule is possible (Course Schedule / cycle detection in a graph).", "keywords": ["topological sort", "cycle", "directed graph", "in-degree"]},
-        {"text": "How would you find the Kth Largest Element in an array?", "keywords": ["heap", "quickselect", "priority queue", "partition"]},
-        {"text": "How would you solve the Coin Change problem - fewest coins to make an amount?", "keywords": ["dynamic programming", "bottom up", "minimum", "unbounded"]},
-        {"text": "How would you validate a Binary Search Tree?", "keywords": ["inorder", "bounds", "recursion", "left", "right"]},
-        {"text": "How would you find the Lowest Common Ancestor of a Binary Search Tree?", "keywords": ["recursion", "left subtree", "right subtree", "BST property"]},
     ],
     ("DSA", "HARD"): [
         {"text": "Walk through how you would design an LRU cache from scratch.", "keywords": ["hash map", "doubly linked list", "eviction", "O(1)"]},
         {"text": "How would you find the median of two sorted arrays more efficiently than merging them?", "keywords": ["binary search", "partition", "log", "sorted arrays"]},
-        {"text": "How would you solve Minimum Window Substring - the smallest window containing all target characters?", "keywords": ["sliding window", "character count", "two pointers", "shrink"]},
-        {"text": "Walk through solving Trapping Rain Water.", "keywords": ["two pointers", "max height", "prefix max", "suffix max"]},
-        {"text": "How would you merge k Sorted Lists efficiently?", "keywords": ["min heap", "divide and conquer", "priority queue", "merge"]},
-        {"text": "How would you find the Longest Consecutive Sequence in an unsorted array in O(n)?", "keywords": ["hash set", "sequence start", "O(n)", "no sorting"]},
-        {"text": "How would you find the maximum value in every Sliding Window of size k?", "keywords": ["deque", "monotonic", "window", "O(n)"]},
-        {"text": "How would you find the shortest transformation sequence in Word Ladder?", "keywords": ["BFS", "graph", "shortest path", "word difference"]},
-        {"text": "How would you serialize and deserialize a binary tree?", "keywords": ["preorder", "traversal", "encode", "decode", "null marker"]},
     ],
     ("DBMS", "EASY"): [
         {"text": "What is the difference between a primary key and a foreign key?", "keywords": ["unique", "reference", "relationship", "constraint"]},
@@ -182,6 +152,57 @@ BANK = {
     ],
 }
 
+ADVANCED_BANK = {
+    "DSA": [
+        {"text": "How would you design an LFU cache with O(1) average get and put operations, and what invariants must be maintained?", "keywords": ["hash map", "frequency", "doubly linked list", "O(1)", "eviction"]},
+        {"text": "Given a large directed graph, how would you find strongly connected components and explain the complexity of your approach?", "keywords": ["SCC", "Tarjan", "Kosaraju", "DFS", "O(V+E)"]},
+    ],
+    "DBMS": [
+        {"text": "How would you design a highly available database for a read-heavy global application, and what consistency trade-offs would you accept?", "keywords": ["replication", "read replica", "sharding", "consistency", "failover"]},
+        {"text": "Explain MVCC and how it allows concurrent transactions while reducing read locking.", "keywords": ["MVCC", "snapshot", "version", "transaction", "isolation"]},
+    ],
+    "Operating Systems": [
+        {"text": "How would you diagnose a production system suffering from high context-switching and CPU contention?", "keywords": ["context switch", "profiling", "scheduler", "CPU", "threads"]},
+        {"text": "Explain how copy-on-write works after fork and why it can improve process creation performance.", "keywords": ["fork", "copy-on-write", "page", "memory", "shared"]},
+    ],
+    "OOP": [
+        {"text": "Design a plugin architecture that allows new implementations to be added without modifying the core application.", "keywords": ["interface", "dependency inversion", "factory", "plugin", "open closed"]},
+        {"text": "How would you refactor a large inheritance hierarchy into a composition-based design while keeping backward compatibility?", "keywords": ["composition", "delegation", "interface", "coupling", "refactor"]},
+    ],
+    "System Design": [
+        {"text": "Design a multi-region interview platform that must survive a regional outage while keeping session data consistent enough for users to resume.", "keywords": ["multi region", "replication", "failover", "consistency", "RPO", "RTO"]},
+        {"text": "Design a real-time notification system for millions of users and explain backpressure and delivery guarantees.", "keywords": ["queue", "websocket", "backpressure", "at least once", "scaling"]},
+    ],
+    "Computer Networks": [
+        {"text": "Compare TCP and QUIC for a latency-sensitive application and explain the architectural trade-offs.", "keywords": ["QUIC", "UDP", "TLS", "multiplexing", "latency"]},
+        {"text": "How would you troubleshoot intermittent latency in a distributed service when application CPU and memory look normal?", "keywords": ["DNS", "network", "packet loss", "tracing", "latency"]},
+    ],
+    "Java": [
+        {"text": "How would you diagnose long GC pauses in a production Java service and decide which JVM metrics to inspect first?", "keywords": ["GC", "heap", "pause", "GC logs", "profiler"]},
+        {"text": "Explain safe publication and the Java Memory Model, including why volatile alone does not make compound operations atomic.", "keywords": ["JMM", "volatile", "happens-before", "atomic", "synchronization"]},
+    ],
+    "Python": [
+        {"text": "How would you design an asyncio service with bounded concurrency so slow downstream calls do not exhaust resources?", "keywords": ["asyncio", "semaphore", "backpressure", "timeout", "concurrency"]},
+        {"text": "How would you investigate memory growth in a long-running Python worker process?", "keywords": ["tracemalloc", "heap", "reference", "garbage collection", "profiling"]},
+    ],
+    "Web Development": [
+        {"text": "Design a secure browser-based authentication flow and explain CSRF, XSS, token storage, and refresh-token rotation.", "keywords": ["CSRF", "XSS", "cookie", "same site", "refresh token"]},
+        {"text": "How would you diagnose a React application that becomes progressively slower after long user sessions?", "keywords": ["memory leak", "effect cleanup", "profiling", "render", "subscription"]},
+    ],
+    "SQL": [
+        {"text": "A query is fast on 100,000 rows but slow on 100 million. How would you use an execution plan to find the bottleneck?", "keywords": ["execution plan", "index", "cardinality", "scan", "join"]},
+        {"text": "Explain table partitioning and when it improves performance versus when it adds operational complexity.", "keywords": ["partition", "pruning", "range", "query", "maintenance"]},
+    ],
+    "Machine Learning": [
+        {"text": "How would you design monitoring for a production ML model when the target label arrives weeks after prediction?", "keywords": ["drift", "data quality", "proxy metric", "delayed label", "monitoring"]},
+        {"text": "Explain how you would detect training-serving skew and prevent leakage in a feature pipeline.", "keywords": ["training serving skew", "feature pipeline", "leakage", "validation", "point in time"]},
+    ],
+    "HR / Behavioral": [
+        {"text": "Tell me about a decision where the technically correct option conflicted with a business or team constraint. How did you handle the trade-off?", "keywords": ["trade-off", "communication", "stakeholder", "decision", "impact"]},
+        {"text": "Describe a situation where you had to change your approach after strong feedback from a senior teammate.", "keywords": ["feedback", "adapt", "ownership", "learning", "outcome"]},
+    ],
+}
+
 DEFAULT_QUESTIONS = [
     {"text": "Walk me through your resume and what you are looking for next.", "keywords": ["experience", "goal", "skills"]},
 ]
@@ -190,8 +211,77 @@ DEFAULT_QUESTIONS = [
 def generate_questions(subject: str, difficulty: str, resume_skills: list[str] | None = None) -> list[dict]:
     subject = (subject or "").strip()
     difficulty = (difficulty or "MEDIUM").upper().strip()
-    questions = BANK.get((subject, difficulty))
+    if difficulty == "ADVANCED":
+        questions = ADVANCED_BANK.get(subject)
+    else:
+        questions = BANK.get((subject, difficulty))
     if not questions:
         any_difficulty = [v for (s, _), v in BANK.items() if s == subject]
         questions = any_difficulty[0] if any_difficulty else DEFAULT_QUESTIONS
+    return questions
+
+# Round 3 uses a separate advanced set rather than simply reusing Round 2.
+ADVANCED_OVERRIDES = {
+    "DSA": [
+        {"text": "How would you design an O(1)-average LRU cache and explain the failure modes under high contention?", "keywords": ["hash map", "doubly linked list", "O(1)", "eviction", "concurrency"]},
+        {"text": "How would you choose between Dijkstra, Bellman-Ford, and Floyd-Warshall for different graph constraints?", "keywords": ["negative weights", "single source", "all pairs", "complexity", "Dijkstra"]},
+    ],
+    "DBMS": [
+        {"text": "How would you design transaction boundaries and indexes for a high-write order system while preserving consistency?", "keywords": ["transaction", "index", "isolation", "write", "consistency"]},
+        {"text": "Explain how query planning, composite indexes, and cardinality estimates interact on a large join.", "keywords": ["query plan", "composite index", "cardinality", "join", "optimizer"]},
+    ],
+    "Operating Systems": [
+        {"text": "How would you investigate a production deadlock involving multiple services and shared resources?", "keywords": ["deadlock", "lock", "trace", "wait graph", "timeout"]},
+        {"text": "Explain how copy-on-write, page faults, and process creation interact in a modern OS.", "keywords": ["copy-on-write", "page fault", "process", "memory", "fork"]},
+    ],
+    "OOP": [
+        {"text": "Design an extensible payment architecture and explain where dependency inversion and strategy patterns belong.", "keywords": ["interface", "dependency inversion", "strategy", "extensible", "testing"]},
+        {"text": "How would you refactor a god object while keeping backward compatibility for existing callers?", "keywords": ["single responsibility", "facade", "interface", "refactor", "compatibility"]},
+    ],
+    "System Design": [
+        {"text": "Design a highly available notification platform with retries, idempotency, rate limiting, and observability.", "keywords": ["queue", "retry", "idempotency", "rate limit", "observability"]},
+        {"text": "How would you design a multi-region service where low latency and data consistency have competing requirements?", "keywords": ["multi-region", "replication", "consistency", "latency", "failover"]},
+    ],
+    "Computer Networks": [
+        {"text": "How would you troubleshoot intermittent TLS failures that occur only behind a load balancer?", "keywords": ["TLS", "certificate", "load balancer", "handshake", "logs"]},
+        {"text": "Explain how TCP congestion control affects throughput on a high-latency lossy link.", "keywords": ["congestion window", "RTT", "packet loss", "slow start", "throughput"]},
+    ],
+    "Java": [
+        {"text": "How would you diagnose thread contention and latency spikes in a Java service under load?", "keywords": ["thread dump", "contention", "profiler", "executor", "latency"]},
+        {"text": "Explain safe publication, the Java Memory Model, and why volatile does not make compound operations atomic.", "keywords": ["JMM", "volatile", "atomic", "happens-before", "synchronization"]},
+    ],
+    "Python": [
+        {"text": "How would you choose between asyncio, threads, and multiprocessing for a mixed I/O and CPU workload?", "keywords": ["asyncio", "threads", "multiprocessing", "GIL", "I/O"]},
+        {"text": "How would you profile a memory-heavy Python service and identify object-retention problems?", "keywords": ["profiler", "heap", "tracemalloc", "references", "garbage collection"]},
+    ],
+    "Web Development": [
+        {"text": "Design secure authentication for a browser application and explain CSRF, XSS, token storage, and refresh rotation.", "keywords": ["CSRF", "XSS", "JWT", "refresh", "secure cookie"]},
+        {"text": "How would you diagnose a React page that becomes progressively slower after repeated navigation?", "keywords": ["memory leak", "effect cleanup", "profiling", "render", "subscriptions"]},
+    ],
+    "SQL": [
+        {"text": "How would you optimize a query that is fast on small data but slow after the table reaches hundreds of millions of rows?", "keywords": ["execution plan", "index", "cardinality", "partition", "statistics"]},
+        {"text": "Explain when a window function is preferable to a correlated subquery and the trade-offs involved.", "keywords": ["window function", "partition", "correlated subquery", "performance", "ranking"]},
+    ],
+    "Machine Learning": [
+        {"text": "How would you design an ML evaluation pipeline that prevents leakage while tuning hyperparameters and selecting a final model?", "keywords": ["cross validation", "leakage", "pipeline", "holdout", "hyperparameter"]},
+        {"text": "How would you detect concept drift in production and decide whether to retrain a model?", "keywords": ["concept drift", "monitoring", "distribution", "retraining", "validation"]},
+    ],
+    "HR / Behavioral": [
+        {"text": "Describe a situation where you changed your approach after receiving difficult feedback. What evidence showed the change worked?", "keywords": ["feedback", "ownership", "change", "evidence", "result"]},
+        {"text": "Tell me about a high-stakes decision where you had incomplete information and how you managed the risk.", "keywords": ["uncertainty", "risk", "decision", "communication", "outcome"]},
+    ],
+}
+
+_ORIGINAL_GENERATE_QUESTIONS = generate_questions
+
+def generate_questions(subject: str, difficulty: str, resume_skills: list[str] | None = None) -> list[dict]:
+    subject = (subject or "").strip()
+    difficulty = (difficulty or "MEDIUM").upper().strip()
+    if difficulty == "ADVANCED" and subject in ADVANCED_OVERRIDES:
+        questions = ADVANCED_OVERRIDES[subject]
+    else:
+        questions = BANK.get((subject, difficulty))
+        if not questions:
+            any_difficulty = [v for (s, _), v in BANK.items() if s == subject]
+            questions = any_difficulty[0] if any_difficulty else DEFAULT_QUESTIONS
     return questions
