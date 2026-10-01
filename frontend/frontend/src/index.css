@@ -469,14 +469,33 @@ body{
   .answer-actions{margin-top:10px}
 }
 
-/* Final interviewer cleanup: the real human video already contains its own face/lips. */
-.avatar-mouth-speaking,
-.talking-mouth,
-.talking-mouth::before,
-.talking-mouth::after,
-.mouth-teeth,
-.mouth-shadow,
-.blink-eye { display: none !important; }
+/* ===== APTITUDE CODING EDITOR ===== */
+.aptitude-page .code-answer-box{
+  width:100%;
+  min-height:360px;
+  box-sizing:border-box;
+  display:block;
+  resize:vertical;
+  padding:22px 24px;
+  border:1px solid #2b3446;
+  border-radius:14px;
+  outline:none;
+  background:#05070b;
+  color:#f4f7fb;
+  caret-color:#7f8cff;
+  font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;
+  font-size:15px;
+  line-height:1.65;
+  letter-spacing:.01em;
+  tab-size:2;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),0 14px 35px rgba(0,0,0,.12);
+}
+.aptitude-page .code-answer-box::selection{
+  background:rgba(109,124,255,.38);
+  color:#fff;
+}
+.aptitude-page .code-answer-box:focus{
+  border-color:#6675ef;
+  box-shadow:0 0 0 3px rgba(102,117,239,.15),inset 0 0 0 1px rgba(255,255,255,.03);
+}
 
-/* Coding assessment UI */
-.code-answer-box{width:100%;min-height:280px;box-sizing:border-box;resize:vertical;border:1px solid #cfd8e8;border-radius:14px;background:#111827;color:#e8edf7;padding:18px;font-family:'IBM Plex Mono',Menlo,Consolas,monospace;font-size:14px;line-height:1.65;outline:none;tab-size:4}.code-answer-box:focus{border-color:#6879e8;box-shadow:0 0 0 3px rgba(104,121,232,.12)}.code-check-panel{display:flex;align-items:flex-start;gap:12px;margin-top:12px}.code-check-result{display:flex;flex-direction:column;gap:4px;padding:10px 13px;border-radius:10px;font-size:12px;line-height:1.4}.code-check-result.correct{background:#ecfbf4;border:1px solid #b8ead5;color:#18794e}.code-check-result.wrong{background:#fff2f3;border:1px solid #ffd0d5;color:#b43747}@media(max-width:650px){.code-check-panel{flex-direction:column}.code-check-panel .btn-secondary{width:100%}}

@@ -123,10 +123,6 @@ export default function AvatarPanel({ text, onDone }) {
           <div className="video-scanline" />
           <div className="video-reflection" />
           <div className="blink-eye" />
-          <div className="talking-mouth">
-            <div className="mouth-teeth" />
-            <div className="mouth-shadow" />
-          </div>
         </div>
       </div>
       <div className="interviewer-topline">
