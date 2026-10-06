@@ -15,15 +15,8 @@ async function request(path, { method = 'GET', token, body } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   })
   if (!res.ok) {
-    let message = `Request failed: ${res.status}`
-    try {
-      const data = await res.json()
-      message = data.error || data.message || message
-    } catch {
-      const text = await res.text().catch(() => '')
-      if (text) message = text
-    }
-    throw new Error(message)
+    const text = await res.text().catch(() => '')
+    throw new Error(text || `Request failed: ${res.status}`)
   }
   return res.json()
 }
@@ -46,8 +39,6 @@ export const authApi = {
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   sendOtp: (payload) => request('/auth/otp/send', { method: 'POST', body: payload }),
   verifyOtp: (payload) => request('/auth/otp/verify', { method: 'POST', body: payload }),
-  forgotPassword: (payload) => request('/auth/password/forgot', { method: 'POST', body: payload }),
-  resetPassword: (payload) => request('/auth/password/reset', { method: 'POST', body: payload }),
 }
 
 export const sessionApi = {
@@ -58,11 +49,6 @@ export const sessionApi = {
     request(`/sessions/${sessionId}/complete`, { method: 'POST', token }),
   getReport: (token, sessionId) =>
     request(`/sessions/${sessionId}/report`, { method: 'GET', token }),
-  getProgress: (token, subject, interviewType) =>
-    request(`/sessions/progress?subject=${encodeURIComponent(subject)}&interviewType=${encodeURIComponent(interviewType)}`, {
-      method: 'GET',
-      token,
-    }),
 }
 
 export const resumeApi = {
@@ -79,14 +65,8 @@ export const resumeApi = {
   },
 }
 
-export const codeApi = {
-  evaluate: (payload) => aiRequest('/qa/evaluate-code', payload),
-}
-
-export const historyApi = {
-  list: (token) => request('/history', { method: 'GET', token }),
-}
-
+// Called directly from the browser, not through the Java backend - see
+// API_CONTRACT.md section 2 for why.
 export const signalsApi = {
   analyzeFrame: (sessionId, imageBase64) =>
     aiRequest('/signals/analyze-frame', { sessionId, imageBase64 }),
@@ -94,11 +74,10 @@ export const signalsApi = {
     aiRequest('/signals/analyze-audio', { sessionId, audioBase64, transcriptChunk, chunkDurationSec }),
 }
 
-export const ownerApi = {
-  login: (payload) => request('/owner/auth/login', { method: 'POST', body: payload }),
-  register: (payload) => request('/owner/auth/register', { method: 'POST', body: payload }),
+export const historyApi = {
+  list: (token) => request('/history', { method: 'GET', token }),
 }
 
-export const adminApi = {
-  getUsers: (token) => request('/admin/users', { method: 'GET', token }),
+export const aiApi = {
+  generateQuestions: (payload) => aiRequest('/qa/generate-questions', payload),
 }

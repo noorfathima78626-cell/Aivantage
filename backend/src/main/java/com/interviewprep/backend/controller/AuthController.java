@@ -4,6 +4,8 @@ import com.interviewprep.backend.dto.AuthDtos.*;
 import com.interviewprep.backend.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -24,16 +26,21 @@ public class AuthController {
         return authService.login(request);
     }
 
-    @PostMapping("/password/forgot")
-    public OtpActionResponse forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    @PostMapping("/forgot-password")
+    public Map<String, String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         authService.requestPasswordReset(request);
-        return new OtpActionResponse(true,
-                "If an account exists for that email, a password-reset OTP has been sent to the registered phone.");
+        return Map.of(
+                "success", "true",
+                "message", "If the account exists, a password reset OTP has been sent to the registered phone number."
+        );
     }
 
-    @PostMapping("/password/reset")
-    public OtpActionResponse resetPassword(@RequestBody ResetPasswordRequest request) {
+    @PostMapping("/reset-password")
+    public Map<String, String> resetPassword(@RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
-        return new OtpActionResponse(true, "Password reset successfully");
+        return Map.of(
+                "success", "true",
+                "message", "Password reset successfully."
+        );
     }
 }

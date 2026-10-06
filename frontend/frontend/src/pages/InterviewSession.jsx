@@ -173,7 +173,7 @@ export default function InterviewSession() {
     }
 
     if (!MOCK_MODE) await sessionApi.complete(token, sessionId)
-    navigate(`/results/${sessionId}`, { state: { answers: updatedAnswers, metrics } })
+    navigate(`/results/${sessionId}`, { state: { answers: updatedAnswers, metrics, subject: selectedSubject, round: selectedRound, interviewType: 'One-on-One' } })
   }
 
   async function handleNext() {

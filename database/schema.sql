@@ -16,6 +16,7 @@ CREATE TABLE users (
     phone VARCHAR(20) NOT NULL UNIQUE,
     phone_verified BOOLEAN NOT NULL DEFAULT FALSE,
     password_hash VARCHAR(255) NOT NULL,
+    profile_type VARCHAR(40) DEFAULT 'Student',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -57,9 +58,16 @@ CREATE TABLE resumes (
 CREATE TABLE questions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     subject VARCHAR(80) NOT NULL,          -- e.g. 'DBMS', 'DSA', 'HR', 'OOP'
-    difficulty VARCHAR(20) NOT NULL,       -- internal mapping: MEDIUM/HARD/ADVANCED for Round 1/2/3
+    difficulty VARCHAR(20) NOT NULL,       -- 'EASY', 'MEDIUM', 'HARD'
     question_text TEXT NOT NULL,
-    ideal_answer_keywords TEXT             -- comma separated keywords used for scoring
+    ideal_answer_keywords TEXT,            -- comma separated keywords used for scoring
+    question_type VARCHAR(20) DEFAULT 'verbal',
+    options_json TEXT NULL,
+    answer_index INT NULL,
+    language VARCHAR(30) NULL,
+    starter_code TEXT NULL,
+    solution_code TEXT NULL,
+    tests_json TEXT NULL
 );
 
 CREATE TABLE interview_sessions (
@@ -67,8 +75,8 @@ CREATE TABLE interview_sessions (
     user_id BIGINT NOT NULL,
     subject VARCHAR(80) NOT NULL,
     difficulty VARCHAR(20) NOT NULL,
-    round_number INT NOT NULL DEFAULT 1,
     interview_type VARCHAR(30) NOT NULL DEFAULT 'One-on-One',
+    round_number INT NOT NULL DEFAULT 1,
     status VARCHAR(20) DEFAULT 'IN_PROGRESS',   -- IN_PROGRESS, COMPLETED, ABANDONED
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ended_at TIMESTAMP NULL,
@@ -125,21 +133,3 @@ CREATE TABLE session_metrics (
 
 CREATE INDEX idx_session_metrics_session ON session_metrics(session_id);
 CREATE INDEX idx_session_questions_session ON session_questions(session_id);
-
--- Per-user progression. Round 2 unlocks only after Round 1 is completed;
--- Round 3 unlocks only after Round 2 is completed. Progress is separate for
--- each subject and interview type.
-CREATE TABLE interview_round_progress (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    subject VARCHAR(80) NOT NULL,
-    interview_type VARCHAR(30) NOT NULL,
-    round_number INT NOT NULL,
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
-    completed_at TIMESTAMP NULL,
-    UNIQUE KEY uk_round_progress_user_subject_type_round (user_id, subject, interview_type, round_number),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_round_progress_user_subject_type
-    ON interview_round_progress(user_id, subject, interview_type);

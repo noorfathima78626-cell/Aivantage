@@ -14,7 +14,7 @@ from signals.hand_movement import score_hand_movement
 from signals.expression import classify_expression, nervousness_score
 from signals.pace import compute_pace_wpm, classify_pace
 from signals.whisper_detection import detect_whisper
-from qa.question_bank import generate_questions as bank_generate_questions
+from qa.question_generator import generate_ai_questions
 from qa.answer_evaluator import evaluate_answer as score_answer
 from qa.code_evaluator import evaluate_code as run_code_evaluator
 import db
@@ -63,6 +63,9 @@ class GenerateQuestionsRequest(BaseModel):
     subject: str
     difficulty: str
     resumeSkills: Optional[list[str]] = None
+    round: int = 1
+    mode: str = "interview"  # "interview" (One-on-One) or "aptitude" (MCQ + coding)
+    exclude: Optional[list[str]] = None  # question texts already asked, to avoid repeats
 
 
 class EvaluateAnswerRequest(BaseModel):
@@ -162,8 +165,16 @@ def analyze_audio(req: AnalyzeAudioRequest):
 
 @app.post("/qa/generate-questions")
 def generate_questions(req: GenerateQuestionsRequest):
-    questions = bank_generate_questions(req.subject, req.difficulty, req.resumeSkills)
-    return {"questions": questions}
+    count = 6 if req.mode == "aptitude" else 5
+    questions, source = generate_ai_questions(
+        subject=req.subject,
+        difficulty=req.difficulty,
+        round_number=req.round,
+        count=count,
+        mode=req.mode,
+        exclude=req.exclude or [],
+    )
+    return {"questions": questions, "source": source}
 
 
 @app.post("/qa/evaluate-answer")

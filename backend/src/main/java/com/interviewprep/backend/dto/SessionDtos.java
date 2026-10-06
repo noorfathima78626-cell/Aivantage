@@ -6,7 +6,11 @@ public class SessionDtos {
 
     public record CreateSessionRequest(String subject, Integer round, String interviewType) {}
 
-    public record QuestionView(Long id, String text, Integer order) {}
+    public record QuestionView(
+            Long id, String text, Integer order,
+            String type, List<String> options,
+            String starterCode, String language
+    ) {}
 
     public record CreateSessionResponse(Long sessionId, List<QuestionView> questions) {}
 

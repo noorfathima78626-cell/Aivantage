@@ -19,7 +19,7 @@ function writeAccounts(accounts) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts))
 }
 
-export function mockRegister({ name, dob, email, phone, password }) {
+export function mockRegister({ name, dob, email, phone, password, profileType = 'Student' }) {
   const accounts = readAccounts()
 
   if (accounts.some((a) => a.email.toLowerCase() === email.toLowerCase())) {
@@ -29,12 +29,12 @@ export function mockRegister({ name, dob, email, phone, password }) {
     throw new Error('An account with this phone number already exists.')
   }
 
-  const account = { id: accounts.length + 1, name, dob, email, phone, password }
+  const account = { id: accounts.length + 1, name, dob, email, phone, password, profileType }
   writeAccounts([...accounts, account])
 
   return {
     token: 'mock-token-' + account.id,
-    user: { id: account.id, name: account.name, email: account.email },
+    user: { id: account.id, name: account.name, email: account.email, profileType: account.profileType },
   }
 }
 
@@ -51,6 +51,6 @@ export function mockLogin({ email, password }) {
 
   return {
     token: 'mock-token-' + account.id,
-    user: { id: account.id, name: account.name, email: account.email },
+    user: { id: account.id, name: account.name, email: account.email, profileType: account.profileType },
   }
 }

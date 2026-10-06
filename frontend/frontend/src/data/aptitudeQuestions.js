@@ -55,11 +55,11 @@ const bank = {
       ['What is thrashing?', ['Fast CPU execution', 'Excessive paging', 'Disk formatting', 'Process termination'], 1],
     ],
     code: [
-      ['Write pseudocode for a producer-consumer buffer using a semaphore.', 'semaphore empty = N\nsemaphore full = 0\nsemaphore mutex = 1\n\n// write producer and consumer logic here', 'pseudocode'],
+      ['Write a JavaScript function maxSafeQueue(items, limit) that returns the first limit items, modelling a bounded producer-consumer queue.', 'function maxSafeQueue(items, limit) {\n  // return at most limit items\n}', 'javascript'],
       ['Write a function that simulates FCFS scheduling and returns average waiting time.', 'function fcfsWaitingTime(burstTimes) {\n  // write your code here\n}', 'javascript'],
-      ['Write pseudocode for a simple round-robin scheduler.', 'queue = processes\nwhile queue is not empty:\n  // run the first process for one time quantum\n  // requeue it if it still has work', 'pseudocode'],
+      ['Write a JavaScript function roundRobinOrder(processes, quantum) that returns process names in one round-robin pass.', 'function roundRobinOrder(processes, quantum) {\n  // return the names after one time slice per process\n}', 'javascript'],
       ['Write a function that calculates page faults for a reference string using FIFO.', 'function fifoPageFaults(pages, capacity) {\n  // write your code here\n}', 'javascript'],
-      ['Write pseudocode for checking whether a set of resources can lead to deadlock.', 'function detectDeadlock(available, allocation, need) {\n  // write your code here\n}', 'pseudocode'],
+      ['Write a JavaScript function hasDeadlockCycle(edges, start) that returns true when the directed dependency graph contains a cycle reachable from start.', 'function hasDeadlockCycle(edges, start) {\n  // detect a cycle with DFS\n}', 'javascript'],
     ],
   },
   OOP: {
@@ -160,11 +160,11 @@ const bank = {
       ['What does IP stand for?', ['Internet Protocol', 'Internal Process', 'Internet Port', 'Input Protocol'], 0],
     ],
     code: [
-      ['Write pseudocode for a simple client-server TCP exchange.', 'server.listen(8080)\nclient.connect(server)\n// send a message and receive a response', 'pseudocode'],
+      ['Write a JavaScript function normalizePort(port) that returns the numeric port when it is between 1 and 65535, otherwise -1.', 'function normalizePort(port) {\n  // validate and return the port\n}', 'javascript'],
       ['Write a function that validates an IPv4 address.', 'function isValidIPv4(address) {\n  // write your code here\n}', 'javascript'],
-      ['Write pseudocode for a simple DNS cache lookup.', 'function resolve(hostname) {\n  // check cache first\n  // query DNS if missing\n  // store and return result\n}', 'pseudocode'],
+      ['Write a JavaScript function dnsLookup(cache, hostname, fallback) that returns the cached address when present, otherwise the fallback.', 'function dnsLookup(cache, hostname, fallback) {\n  // check cache first\n}', 'javascript'],
       ['Write a function that converts an IPv4 address to an array of four octets.', 'function toOctets(ip) {\n  // write your code here\n}', 'javascript'],
-      ['Write pseudocode for retrying a failed network request with a maximum of 3 attempts.', 'for attempt = 1 to 3:\n  // send request\n  // stop if successful\n// report failure', 'pseudocode'],
+      ['Write a JavaScript function retryCount(results) that returns the number of attempts through the first successful result, with all attempts counted when none succeeds.', 'function retryCount(results) {\n  // stop counting after the first true value\n}', 'javascript'],
     ],
   },
   'Web Development': {
@@ -223,11 +223,32 @@ const bank = {
       ['Why are database indexes used?', ['To speed up selected queries', 'To replace backups', 'To encrypt every row', 'To remove transactions'], 0],
     ],
     code: [
-      ['Design a simple URL shortener. Write pseudocode for creating a short code and storing the URL mapping.', 'function shortenUrl(longUrl) {\n  // generate a unique short code\n  // store shortCode -> longUrl\n  // return the short URL\n}', 'pseudocode'],
-      ['Write pseudocode for a rate limiter that allows at most 100 requests per minute per user.', 'function allowRequest(userId, now) {\n  // track requests for the user\n  // allow only up to 100 in the last minute\n}', 'pseudocode'],
-      ['Write pseudocode for a cache-aside lookup that checks cache before the database.', 'function getUser(userId) {\n  // check cache\n  // if missing, read from database\n  // store the result in cache\n  // return the user\n}', 'pseudocode'],
-      ['Design a simple message queue producer and consumer in pseudocode.', 'queue = []\n\nfunction publish(message) {\n  // add message to queue\n}\n\nfunction consume() {\n  // remove and process one message\n}', 'pseudocode'],
-      ['Write pseudocode for retrying a failed service call with exponential backoff.', 'function callWithRetry(request) {\n  // retry a limited number of times\n  // increase the delay after each failure\n}', 'pseudocode'],
+      ['Write a JavaScript function base62Key(number) that converts a positive integer to a compact base-62 key.', 'function base62Key(number) {\n  // use 0-9, A-Z and a-z\n}', 'javascript'],
+      ['Write a JavaScript function allowRequest(timestamps, now) that returns true when fewer than 3 requests occurred in the previous 60 seconds.', 'function allowRequest(timestamps, now) {\n  // count requests in the previous minute\n}', 'javascript'],
+      ['Write a JavaScript function cacheAside(cache, key, fallback) that returns cache[key] when present, otherwise returns fallback.', 'function cacheAside(cache, key, fallback) {\n  // cache-first lookup\n}', 'javascript'],
+      ['Write a JavaScript function queueRoundTrip(items, message) that appends a message and returns the next item plus the remaining queue.', 'function queueRoundTrip(items, message) {\n  // enqueue then dequeue\n}', 'javascript'],
+      ['Write a JavaScript function backoffDelays(attempts, base) that returns exponential delays base, base*2, base*4 ... for the requested number of attempts.', 'function backoffDelays(attempts, base) {\n  // build exponential delays\n}', 'javascript'],
+    ],
+  },
+  'HR / Behavioral': {
+    mcq: [
+      ['In the STAR method, what does S stand for?', ['Solution', 'Situation', 'Skill', 'Summary'], 1],
+      ['What is the best way to answer a behavioral question?', ['Give a vague answer', 'Use a specific example and explain your actions and result', 'Only describe the team', 'Avoid the result'], 1],
+      ['When discussing a weakness, what is useful to include?', ['A made-up weakness', 'A real weakness plus steps you are taking to improve', 'Only the weakness', 'A complaint about a manager'], 1],
+      ['If you disagree with a teammate, what should you usually do first?', ['Ignore them', 'Understand their reasoning and discuss the trade-off', 'Escalate immediately', 'Stop the project'], 1],
+      ['What makes an interview answer easier to follow?', ['Random details', 'A clear beginning, middle and conclusion', 'Very long sentences', 'Avoiding examples'], 1],
+      ['What should you do if you do not know an interview answer?', ['Invent facts', 'Explain what you know and describe how you would find the answer', 'Stay silent', 'Blame the question'], 1],
+      ['Which is a strong way to describe teamwork?', ['I did everything', 'I explained your contribution, collaboration and result', 'The team was good', 'We finished somehow'], 1],
+      ['What does active listening include?', ['Interrupting', 'Paying attention and responding to what was said', 'Looking away', 'Planning your next sentence only'], 1],
+      ['What is a good way to discuss a project failure?', ['Hide it', 'Explain what happened, what you learned and what you changed', 'Blame another person', 'Say nothing went wrong'], 1],
+      ['Why are measurable results useful in interview answers?', ['They make answers longer', 'They show the impact of your work', 'They replace examples', 'They avoid responsibility'], 1],
+    ],
+    code: [
+      ['Write a Python function star_completeness(sections) that returns how many of Situation, Task, Action and Result are non-empty.', 'def star_completeness(sections):\n    # return the count of non-empty STAR sections\n    pass', 'python'],
+      ['Write a Python function count_action_words(text) that counts the words "led", "built" and "improved" case-insensitively.', 'def count_action_words(text):\n    # return the number of matching action words\n    pass', 'python'],
+      ['Write a Python function answer_length_ok(text) that returns True when an answer has between 30 and 120 words inclusive.', 'def answer_length_ok(text):\n    # return True for 30..120 words\n    pass', 'python'],
+      ['Write a Python function unique_skills(skills) that removes duplicate skill names while preserving order.', 'def unique_skills(skills):\n    # return unique values in original order\n    pass', 'python'],
+      ['Write a Python function result_ratio(achieved, target) that returns achieved / target, or 0 when target is 0.', 'def result_ratio(achieved, target):\n    # avoid division by zero\n    pass', 'python'],
     ],
   },
 }
@@ -261,82 +282,162 @@ function shuffle(items) {
   return copy
 }
 
-const HISTORY_KEY = 'aivantage_aptitude_question_history_v2'
+const SESSION_PREFIX = 'aivantage_aptitude_session_v3_'
 
-function readHistory() {
-  try {
-    const value = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}')
-    return value && typeof value === 'object' ? value : {}
-  } catch {
-    return {}
-  }
+const CODE_TESTS = {
+  maxSafeQueue: [{ input: [[1,2,3,4], 2], expected: [1,2], spread: true }],
+  roundRobinOrder: [{ input: [["A","B","C"], 1], expected: ["A","B","C"], spread: true }],
+  hasDeadlockCycle: [{ input: [{A:['B'],B:['C'],C:['A']}, 'A'], expected: true, spread: true }, { input: [{A:['B'],B:['C'],C:[]}, 'A'], expected: false, spread: true }],
+  normalizePort: [{ input: 443, expected: 443 }, { input: 70000, expected: -1 }],
+  dnsLookup: [{ input: [{example:'1.2.3.4'}, 'example', '0.0.0.0'], expected: '1.2.3.4', spread: true }, { input: [{}, 'example', '0.0.0.0'], expected: '0.0.0.0', spread: true }],
+  retryCount: [{ input: [false,false,true,false], expected: 3 }, { input: [false,false,false], expected: 3 }],
+  base62Key: [{ input: 0, expected: '0' }, { input: 61, expected: 'z' }, { input: 62, expected: '10' }],
+  allowRequest: [{ input: [[950,980], 1000], expected: true, spread: true }, { input: [[941,950,980], 1000], expected: false, spread: true }],
+  cacheAside: [{ input: [{a:10}, 'a', 99], expected: 10, spread: true }, { input: [{}, 'a', 99], expected: 99, spread: true }],
+  queueRoundTrip: [{ input: [[1,2], 3], expected: { next: 1, remaining: [2,3] }, spread: true }],
+  backoffDelays: [{ input: [4, 100], expected: [100,200,400,800], spread: true }],
+  reverseString: [
+    { input: 'hello', expected: 'olleh' },
+    { input: 'Aivantage', expected: 'egatnav iA'.replace(' ', '') },
+  ],
+  findMax: [
+    { input: [3, 9, 2, 7], expected: 9 },
+    { input: [-5, -2, -11], expected: -2 },
+  ],
+  isPalindrome: [
+    { input: 'level', expected: true },
+    { input: 'interview', expected: false },
+  ],
+  frequency: [
+    { input: ['a', 'b', 'a'], expected: { a: 2, b: 1 } },
+    { input: [1, 1, 2], expected: { '1': 2, '2': 1 } },
+  ],
+  removeDuplicates: [
+    { input: [1, 2, 1, 3, 2], expected: [1, 2, 3] },
+    { input: ['a', 'a', 'b'], expected: ['a', 'b'] },
+  ],
+  fcfsWaitingTime: [
+    { input: [5, 3, 8], expected: 2.67 },
+    { input: [2, 2, 2], expected: 1.33 },
+  ],
+  fifoPageFaults: [
+    { input: [[1, 2, 1, 3, 1, 2], 2], expected: 4 },
+    { input: [[1, 2, 3, 1, 2, 3], 2], expected: 6 },
+  ],
+  isValidIPv4: [
+    { input: '192.168.1.10', expected: true },
+    { input: '300.1.1.1', expected: false },
+  ],
+  toOctets: [
+    { input: '10.20.30.40', expected: [10, 20, 30, 40] },
+    { input: '127.0.0.1', expected: [127, 0, 0, 1] },
+  ],
+  isValidEmail: [
+    { input: 'user@example.com', expected: true },
+    { input: 'user@example', expected: false },
+  ],
+  unique: [
+    { input: [1, 2, 1, 3], expected: [1, 2, 3] },
+    { input: ['x', 'x', 'y'], expected: ['x', 'y'] },
+  ],
+  reverse_string: [
+    { input: 'hello', expected: 'olleh' },
+    { input: 'AIV', expected: 'VIA' },
+  ],
+  word_frequency: [
+    { input: 'red blue red', expected: { red: 2, blue: 1 } },
+    { input: 'one one two', expected: { one: 2, two: 1 } },
+  ],
+  unique_values: [
+    { input: [1, 2, 1, 3], expected: [1, 2, 3] },
+    { input: ['a', 'a', 'b'], expected: ['a', 'b'] },
+  ],
+  is_prime: [
+    { input: 29, expected: true },
+    { input: 21, expected: false },
+  ],
+  countVowels: [
+    { input: 'Interview', expected: 4 },
+    { input: 'xyz', expected: 0 },
+  ],
+  factorial: [
+    { input: 5, expected: 120 },
+    { input: 0, expected: 1 },
+  ],
+  star_completeness: [
+    { input: ['Situation', 'Task', 'Action', 'Result'], expected: 4 },
+    { input: ['Situation', '', 'Action', ''], expected: 2 },
+  ],
+  count_action_words: [
+    { input: 'I led a team and built a dashboard and improved speed.', expected: 3 },
+    { input: 'I tested the project.', expected: 0 },
+  ],
+  answer_length_ok: [
+    { input: Array(30).fill('word').join(' '), expected: true },
+    { input: 'too short', expected: false },
+  ],
+  result_ratio: [
+    { input: [80, 100], expected: 0.8 },
+    { input: [5, 0], expected: 0 },
+  ],
 }
 
-function chooseFresh(items, usedIds, count) {
-  let fresh = items.filter((item) => !usedIds.has(item.id))
-  if (fresh.length < count) {
-    usedIds.clear()
-    fresh = [...items]
-  }
-  return shuffle(fresh).slice(0, count)
+function inferFunctionName(starterCode = '') {
+  const match = starterCode.match(/(?:function|def|static\s+\w+\s+|async\s+function)\s+([A-Za-z_]\w*)/) 
+  return match ? match[1] : null
 }
 
-export function getAptitudeQuestions(subject = 'General', sessionKey = '') {
-  const source = bank[subject] || generic
-
-  // Keep one fixed question set for one assessment. This prevents React
-  // development-mode re-renders/reloads from consuming another set.
-  const sessionStorageKey = sessionKey
-    ? `aivantage_aptitude_session_${sessionKey}`
-    : ''
-  if (sessionStorageKey) {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(sessionStorageKey) || 'null')
-      if (Array.isArray(saved) && saved.length > 0) return saved
-    } catch {}
-  }
-
-  const history = readHistory()
-  const subjectHistory = history[subject] || { mcq: [], code: [] }
-  const usedMcq = new Set(subjectHistory.mcq || [])
-  const usedCode = new Set(subjectHistory.code || [])
-
-  const mcqPool = source.mcq.map(([text, options, answerIndex], index) => ({
-    id: `${subject}-mcq-${index + 1}`,
-    type: 'mcq',
-    text,
-    options,
-    answerIndex,
-  }))
-  const codePool = source.code.map(([text, starterCode, language], index) => ({
+function codeEntry(subject, raw, index) {
+  const [text, starterCode, language] = raw
+  const functionName = inferFunctionName(starterCode)
+  return {
     id: `${subject}-code-${index + 1}`,
     type: 'code',
     text,
     starterCode,
     language,
+    functionName,
+    tests: functionName ? (CODE_TESTS[functionName] || []) : [],
+  }
+}
+
+function readSessionQuestions(sessionKey) {
+  if (!sessionKey) return null
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(`${SESSION_PREFIX}${sessionKey}`) || 'null')
+    return Array.isArray(saved) && saved.length ? saved : null
+  } catch {
+    return null
+  }
+}
+
+function saveSessionQuestions(sessionKey, questions) {
+  if (!sessionKey) return
+  try { sessionStorage.setItem(`${SESSION_PREFIX}${sessionKey}`, JSON.stringify(questions)) } catch {}
+}
+
+export function getAptitudeQuestions(subject = 'General', round = 1, sessionKey = '') {
+  const cached = readSessionQuestions(sessionKey)
+  if (cached) return cached
+
+  const source = bank[subject] || generic
+  const safeRound = Math.max(1, Math.min(3, Number(round) || 1))
+  const mcqPool = source.mcq.map(([text, options, answerIndex], index) => ({
+    id: `${subject}-r${safeRound}-mcq-${index + 1}`,
+    type: 'mcq', text, options, answerIndex,
   }))
 
-  // Each aptitude session gets 4 MCQs + 1 coding question. Used questions are
-  // remembered in this browser so Round 1, Round 2 and Round 3 do not repeat
-  // until the available bank for that subject is exhausted.
-  const selectedMcq = chooseFresh(mcqPool, usedMcq, Math.min(4, mcqPool.length))
-  const selectedCode = chooseFresh(codePool, usedCode, Math.min(1, codePool.length))
-  const questions = shuffle([...selectedMcq, ...selectedCode])
+  // The bank has at least 9 MCQs for the supported subjects. Each round uses
+  // a different 3-question slice, so Round 1/2/3 cannot reuse the same MCQs.
+  const start = (safeRound - 1) * 3
+  let selectedMcq = mcqPool.slice(start, start + 3)
+  if (selectedMcq.length < 3) selectedMcq = mcqPool.slice(0, 3)
 
-  const nextHistory = readHistory()
-  nextHistory[subject] = {
-    mcq: [...usedMcq, ...selectedMcq.map((q) => q.id)],
-    code: [...usedCode, ...selectedCode.map((q) => q.id)],
-  }
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory))
-  } catch {}
+  const codingPool = source.code || []
+  const codeRaw = codingPool[(safeRound - 1) % Math.max(1, codingPool.length)]
+  const selectedCode = codeRaw ? codeEntry(subject, codeRaw, (safeRound - 1) % codingPool.length) : null
+  const questions = shuffle([...selectedMcq, ...(selectedCode ? [selectedCode] : [])])
 
-  if (sessionStorageKey) {
-    try {
-      sessionStorage.setItem(sessionStorageKey, JSON.stringify(questions))
-    } catch {}
-  }
-
+  saveSessionQuestions(sessionKey, questions)
   return questions
 }

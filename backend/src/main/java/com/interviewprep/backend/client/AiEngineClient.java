@@ -26,15 +26,28 @@ public class AiEngineClient {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> generateQuestions(String subject, String difficulty, List<String> skills) {
-        Map<String, Object> body = Map.of(
-                "subject", subject,
-                "difficulty", difficulty,
-                "resumeSkills", skills
-        );
+    public List<Map<String, Object>> generateQuestions(String subject, String difficulty, List<String> skills,
+                                                         int round, String mode, List<String> exclude) {
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("subject", subject);
+        body.put("difficulty", difficulty);
+        body.put("resumeSkills", skills);
+        body.put("round", round);
+        body.put("mode", mode);
+        body.put("exclude", exclude);
         Map<String, Object> response = restTemplate.postForObject(
                 baseUrl + "/qa/generate-questions", body, Map.class);
         return (List<Map<String, Object>>) response.get("questions");
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> evaluateCode(String language, String code, String functionName, List<Map<String, Object>> tests) {
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("language", language == null ? "python" : language);
+        body.put("code", code);
+        body.put("functionName", functionName);
+        body.put("tests", tests == null ? List.of() : tests);
+        return restTemplate.postForObject(baseUrl + "/qa/evaluate-code", body, Map.class);
     }
 
     @SuppressWarnings("unchecked")

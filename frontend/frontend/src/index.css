@@ -87,11 +87,11 @@ label{display:block;font-size:11px;font-weight:800;color:#91a2c0;text-transform:
 .interview-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.interviewer-stage{min-height:430px;border-radius:24px;position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(circle at 50% 30%,rgba(112,128,255,.22),transparent 35%),linear-gradient(145deg,#101e38,#081323)}
 .stage-grid{position:absolute;inset:0;opacity:.18;background-image:linear-gradient(rgba(150,170,210,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(150,170,210,.16) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
 .stage-glow{position:absolute;width:240px;height:240px;border-radius:50%;filter:blur(25px);opacity:.38}.stage-glow-one{background:#6575ff;top:-90px;left:-70px}.stage-glow-two{background:#29d3c2;right:-100px;bottom:50px}
-.human-avatar{position:absolute;width:min(84%,390px);left:50%;bottom:0;transform:translateX(-50%);filter:drop-shadow(0 24px 22px rgba(0,0,0,.45));z-index:2;transform-origin:center bottom;animation:avatarIdle 5s ease-in-out infinite}.human-avatar svg{width:100%;height:auto;display:block}.avatar-speaking{animation:avatarSpeak 1.2s ease-in-out infinite}.avatar-mouth-speaking{animation:mouthMove .42s ease-in-out infinite alternate}
+.human-avatar{position:absolute;width:min(84%,390px);left:50%;bottom:0;transform:translateX(-50%);filter:drop-shadow(0 24px 22px rgba(0,0,0,.45));z-index:2;transform-origin:center bottom;animation:avatarIdle 5s ease-in-out infinite}.human-avatar svg{width:100%;height:auto;display:block}.avatar-mouth-speaking{animation:mouthMove .42s ease-in-out infinite alternate}
 .interviewer-label{position:absolute;left:18px;right:18px;bottom:18px;z-index:4;padding:16px 17px;border-radius:17px;display:flex;align-items:center;justify-content:space-between;color:#fff;background:rgba(5,13,27,.82);border:1px solid rgba(255,255,255,.11);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.25)}.interviewer-label h2{color:#fff;font-size:18px;margin:2px 0}.interviewer-label p{margin:0;color:#9eafcc;font-size:12px}.interviewer-label .eyebrow{color:#9da9ff}
 .status-speaking,.status-ready{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;padding:7px 10px;border-radius:20px;background:rgba(255,255,255,.07)}.status-dot{width:7px;height:7px;border-radius:50%;background:#71809c}.status-speaking .status-dot{background:#53e0b0;box-shadow:0 0 0 6px rgba(83,224,176,.1);animation:pulseGreen 1.2s infinite}
 @keyframes pulseGreen{50%{box-shadow:0 0 0 8px rgba(83,224,176,0)}}
-@keyframes avatarIdle{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}@keyframes avatarSpeak{0%,100%{transform:translateX(-50%) translateY(0) rotate(-.2deg)}50%{transform:translateX(-50%) translateY(-3px) rotate(.2deg)}}@keyframes mouthMove{from{transform:scaleY(.8);transform-origin:center}to{transform:scaleY(1.35);transform-origin:center}}
+@keyframes avatarIdle{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}@keyframes mouthMove{from{transform:scaleY(.8);transform-origin:center}to{transform:scaleY(1.35);transform-origin:center}}
 .camera-panel{border-radius:24px;padding:15px;display:flex;flex-direction:column}.camera-panel-title{display:flex;align-items:center;justify-content:space-between;padding:5px 6px 14px}.camera-panel-title h2{margin:2px 0;font-size:18px}.camera-rec{color:#ff7585;font-size:10px;font-family:var(--font-mono);display:flex;align-items:center;gap:6px}.camera-rec i{width:7px;height:7px;border-radius:50%;background:#ff5d72;animation:pulse 1.5s infinite}.metric-stack{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
 .question-card{margin-top:20px;border-radius:24px;padding:28px}.question-card-head{display:flex;align-items:center;gap:12px}.mini-interviewer{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;background:linear-gradient(145deg,#6575ff,#29d3c2);box-shadow:0 10px 22px rgba(109,124,255,.22)}.question-card h2{margin:2px 0;font-size:15px}.question-text{font-size:clamp(20px,2.4vw,30px);line-height:1.42;letter-spacing:-.025em;max-width:900px;margin:23px 0 24px;font-weight:650;color:#f2f5ff}.answer-box{min-height:118px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);border-radius:18px;padding:17px}.answer-box.listening{border-color:rgba(109,124,255,.65);box-shadow:0 0 0 4px rgba(109,124,255,.10)}.answer-status{display:flex;align-items:center;gap:8px;font-size:12px;color:#8fa0bb;font-weight:700}.answer-pulse{width:8px;height:8px;border-radius:50%;background:#63728d}.answer-pulse.active{background:#ff5d72;animation:pulse 1.2s infinite}.transcript-text{margin-top:12px;line-height:1.65;font-size:14px;color:#a9b6cd}.answer-actions{display:flex;justify-content:space-between;gap:12px;margin-top:18px}.btn-large{padding:13px 19px;border-radius:12px}.next-button{margin-left:auto}
 .performance-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.performance-card{padding:19px 20px;border-radius:18px}.performance-card span{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:10px;color:#8393ae;font-weight:800}.performance-card strong{display:block;font-size:24px;margin:7px 0 12px}.performance-track{height:6px;border-radius:20px;background:rgba(255,255,255,.08);overflow:hidden}.performance-track div{height:100%;border-radius:inherit;background:linear-gradient(90deg,#6575ff,#29d3c2);transition:width .5s ease}
@@ -207,9 +207,6 @@ body{
   animation:portraitLightSweep 8s ease-in-out infinite;
   mix-blend-mode:screen;
 }
-.avatar-speaking{
-  animation:avatarSpeakingBody 1.05s ease-in-out infinite;
-}
 .avatar-speaking .realistic-interviewer{
   animation:interviewerSpeakingMotion .72s ease-in-out infinite;
   filter:brightness(1.04) saturate(1.05);
@@ -227,10 +224,6 @@ body{
   0%,100%{transform:scale(1.026) translateY(0) rotate(.08deg)}
   35%{transform:scale(1.035) translateY(-3px) rotate(-.16deg)}
   70%{transform:scale(1.03) translateY(1px) rotate(.12deg)}
-}
-@keyframes avatarSpeakingBody{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-3px)}
 }
 @keyframes portraitLightSweep{
   0%,55%{transform:translateX(-140%)}
@@ -251,11 +244,6 @@ body{
 @keyframes avatarNaturalIdle{
   0%,100%{transform:translateX(-50%) translateY(0)}
   50%{transform:translateX(-50%) translateY(-2px)}
-}
-.avatar-speaking{animation:avatarSpeakingBody 1.05s ease-in-out infinite}
-@keyframes avatarSpeakingBody{
-  0%,100%{transform:translateX(-50%) translateY(0)}
-  50%{transform:translateX(-50%) translateY(-4px)}
 }
 
 /* ===== TIMED APTITUDE MODE ===== */

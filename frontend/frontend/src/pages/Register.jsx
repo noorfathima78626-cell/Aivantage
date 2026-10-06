@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { authApi } from '../api/api.js'
+import { authApi, MOCK_MODE } from '../api/api.js'
 import { mockRegister } from '../api/mockAuthStore.js'
 import { useAuth } from '../context/AuthContext.jsx'
-const MOCK_MODE = true;
 
 export default function Register() {
   const navigate = useNavigate()
   const { login } = useAuth()
 
   const [form, setForm] = useState({
-    name: '', dob: '', email: '', phone: '', password: '', confirmPassword: '',
+    name: '', dob: '', email: '', phone: '', password: '', confirmPassword: '', profileType: 'Student',
   })
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [error, setError] = useState('')
@@ -119,13 +118,13 @@ export default function Register() {
         await new Promise((r) => setTimeout(r, 500))
         const res = mockRegister({
           name: form.name, dob: form.dob, email: form.email,
-          phone: form.phone, password: form.password,
+          phone: form.phone, password: form.password, profileType: form.profileType,
         })
         login(res.token, res.user)
       } else {
         const res = await authApi.register({
           name: form.name, dob: form.dob, email: form.email,
-          phone: form.phone, password: form.password,
+          phone: form.phone, password: form.password, profileType: form.profileType,
         })
         login(res.token, res.user)
       }
@@ -201,6 +200,13 @@ export default function Register() {
               </div>
             )}
             {otpError && <p className="error-text">{otpError}</p>}
+          </div>
+
+          <div className="field">
+            <label>Profile type</label>
+            <select value={form.profileType} onChange={update('profileType')}>
+              <option>Student</option><option>Fresher / Recent Graduate</option><option>Working Professional</option><option>Ex-Employee / Career Returner</option><option>Other</option>
+            </select>
           </div>
 
           <div className="field">

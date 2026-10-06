@@ -9,7 +9,7 @@ export default function PreCheck() {
   const navigate = useNavigate()
   const location = useLocation()
   const { token } = useAuth()
-  const { subject = 'DSA', round = 1, interviewType = 'One-on-One' } = location.state || {}
+  const { subject = 'DSA', difficulty = 'MEDIUM', interviewType = 'One-on-One', round = 1 } = location.state || {}
   const [starting, setStarting] = useState(false)
   const [cameraReady, setCameraReady] = useState(false)
   const [speakerTested, setSpeakerTested] = useState(false)
@@ -35,20 +35,26 @@ export default function PreCheck() {
     try {
       let sessionId
       let questions
+      // Declared up front (with defaults) - these were being assigned
+      // without ever being declared, which throws in strict mode.
+      let effectiveDifficulty = difficulty
+      let effectiveRound = round
+
       if (MOCK_MODE) {
         await new Promise((r) => setTimeout(r, 500))
         sessionId = 'demo-session-1'
       } else {
-        const res = await sessionApi.create(token, { subject, round, interviewType })
+        const res = await sessionApi.create(token, { subject, difficulty, interviewType, round })
         sessionId = res.sessionId
         questions = res.questions
+        effectiveDifficulty = res.effectiveDifficulty || difficulty
+        effectiveRound = res.round || round
+        sessionStorage.setItem(`aivantage_round_${subject}_${interviewType}`, String(res.round))
       }
-      navigate(interviewType === 'Aptitude' ? `/aptitude/${sessionId}` : `/session/${sessionId}`, {
-        state: { subject, round, interviewType, questions },
-      })
+      navigate(interviewType === 'Aptitude' ? `/aptitude/${sessionId}` : `/session/${sessionId}`, { state: { subject, difficulty: effectiveDifficulty, interviewType, round: effectiveRound, questions } })
     } catch (err) {
       console.error('Failed to start session:', err)
-      setError(err.message || 'Could not start session. Complete the previous round first if it is locked.')
+      setError(err.message || 'Could not start the session - is the backend running?')
     } finally {
       setStarting(false)
     }
@@ -57,17 +63,12 @@ export default function PreCheck() {
   return (
     <div className="page-shell">
       <Navbar />
-      <main className="precheck-shell">
-        <div className="dashboard-hero">
-          <div>
-            <span className="eyebrow">BEFORE WE BEGIN</span>
-            <h1>Camera &amp; microphone check</h1>
-            <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
-              Make sure you're well lit and framed in the center. We'll use this feed to track eye contact, hand movement, and expression during the session.
-            </p>
-          </div>
-          <span className="hero-badge">● Round {round}</span>
-        </div>
+      <main className="precheck-shell"><div className="dashboard-hero"><div><span className="eyebrow">BEFORE WE BEGIN</span>
+        <h1>Camera &amp; microphone check</h1>
+        <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
+          Make sure you're well lit and framed in the center. We'll use this feed to track eye
+          contact, hand movement, and expression during the session.
+        </p></div><span className="hero-badge">● Secure camera check</span></div>
 
         <WebcamFeed onReady={setCameraReady} />
 
@@ -78,7 +79,7 @@ export default function PreCheck() {
           </div>
           {!cameraReady && (
             <p style={{ fontSize: 13, color: 'var(--ink-soft)', margin: '0 0 14px' }}>
-              Turn on your camera above and allow browser permission if prompted.
+              Turn on your camera above to continue — allow the browser permission if prompted.
             </p>
           )}
 
@@ -91,21 +92,38 @@ export default function PreCheck() {
           </button>
           {speakerTested && (
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, textTransform: 'none', fontWeight: 400, fontSize: 14 }}>
-              <input type="checkbox" checked={speakerConfirmed} onChange={(e) => setSpeakerConfirmed(e.target.checked)} style={{ width: 'auto' }} />
+              <input
+                type="checkbox" checked={speakerConfirmed}
+                onChange={(e) => setSpeakerConfirmed(e.target.checked)}
+                style={{ width: 'auto' }}
+              />
               I heard the test sound clearly
             </label>
           )}
         </div>
 
         <div className="card" style={{ marginTop: 16, padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}><span style={{ color: 'var(--ink-soft)' }}>Subject</span><span className="mono">{subject}</span></div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}><span style={{ color: 'var(--ink-soft)' }}>Interview round</span><span className="mono">Round {round}</span></div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}><span style={{ color: 'var(--ink-soft)' }}>Interview type</span><span className="mono">{interviewType}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}>
+            <span style={{ color: 'var(--ink-soft)' }}>Subject</span>
+            <span className="mono">{subject}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}>
+            <span style={{ color: 'var(--ink-soft)' }}>Difficulty</span>
+            <span className="mono">{difficulty}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+            <span style={{ color: 'var(--ink-soft)' }}>Interview type</span>
+            <span className="mono">{interviewType} • Round {round}</span>
+          </div>
         </div>
 
         {error && <p className="error-text" style={{ marginTop: 12 }}>{error}</p>}
-        <button className="btn-primary" style={{ width: '100%', marginTop: 20 }} onClick={handleStart} disabled={starting || !allReady}>
-          {starting ? 'Starting session…' : !allReady ? 'Turn on camera & confirm speaker to continue' : `I'm ready — start Round ${round}`}
+
+        <button
+          className="btn-primary" style={{ width: '100%', marginTop: 20 }}
+          onClick={handleStart} disabled={starting || !allReady}
+        >
+          {starting ? 'Starting session…' : !allReady ? 'Turn on camera & confirm speaker to continue' : "I'm ready — start the interview"}
         </button>
       </main>
     </div>
@@ -113,5 +131,13 @@ export default function PreCheck() {
 }
 
 function StatusPill({ ok, okLabel, waitLabel }) {
-  return <span className="mono" style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: ok ? 'rgba(46,158,91,0.12)' : 'rgba(139,147,163,0.12)', color: ok ? '#1F7A44' : 'var(--ink-soft)' }}>{ok ? okLabel : waitLabel}</span>
+  return (
+    <span className="mono" style={{
+      fontSize: 11, padding: '3px 9px', borderRadius: 20,
+      background: ok ? 'rgba(46,158,91,0.12)' : 'rgba(139,147,163,0.12)',
+      color: ok ? '#1F7A44' : 'var(--ink-soft)',
+    }}>
+      {ok ? okLabel : waitLabel}
+    </span>
+  )
 }

@@ -1,5 +1,6 @@
 package com.interviewprep.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interviewprep.backend.client.AiEngineClient;
 import com.interviewprep.backend.dto.SessionDtos.*;
 import com.interviewprep.backend.model.*;
@@ -21,6 +22,7 @@ public class SessionService {
     private final ResumeRepository resumeRepository;
     private final AiEngineClient aiEngineClient;
     private final InterviewRoundProgressService roundProgressService;
+    private final ObjectMapper objectMapper;
 
     public SessionService(InterviewSessionRepository sessionRepository,
                            QuestionRepository questionRepository,
@@ -29,7 +31,8 @@ public class SessionService {
                            SessionReportRepository sessionReportRepository,
                            ResumeRepository resumeRepository,
                            AiEngineClient aiEngineClient,
-                           InterviewRoundProgressService roundProgressService) {
+                           InterviewRoundProgressService roundProgressService,
+                           ObjectMapper objectMapper) {
         this.sessionRepository = sessionRepository;
         this.questionRepository = questionRepository;
         this.sessionQuestionRepository = sessionQuestionRepository;
@@ -38,6 +41,7 @@ public class SessionService {
         this.resumeRepository = resumeRepository;
         this.aiEngineClient = aiEngineClient;
         this.roundProgressService = roundProgressService;
+        this.objectMapper = objectMapper;
     }
 
     public CreateSessionResponse createSession(Long userId, CreateSessionRequest req) {
@@ -57,7 +61,12 @@ public class SessionService {
         session.setInterviewType(interviewType);
         session = sessionRepository.save(session);
 
-        List<Question> questions = generateOrFallbackQuestions(userId, req.subject(), difficulty);
+        String mode = "Aptitude".equalsIgnoreCase(interviewType) ? "aptitude" : "interview";
+        List<String> alreadyAsked = sessionQuestionRepository
+                .findAskedQuestionTextsByUserAndSubject(userId, req.subject());
+
+        List<Question> questions = generateOrFallbackQuestions(userId, req.subject(), difficulty,
+                round, mode, alreadyAsked);
 
         List<QuestionView> views = new ArrayList<>();
         int order = 1;
@@ -69,14 +78,45 @@ public class SessionService {
             sq.setAskedAt(LocalDateTime.now());
             sessionQuestionRepository.save(sq);
 
-            views.add(new QuestionView(q.getId(), q.getQuestionText(), order));
+            views.add(new QuestionView(q.getId(), q.getQuestionText(), order,
+                    q.getType(), parseOptions(q.getOptionsJson()), q.getStarterCode(), q.getLanguage()));
             order++;
         }
 
         return new CreateSessionResponse(session.getId(), views);
     }
 
-    private List<Question> generateOrFallbackQuestions(Long userId, String subject, String difficulty) {
+    @SuppressWarnings("unchecked")
+    private List<String> parseOptions(String optionsJson) {
+        if (optionsJson == null || optionsJson.isBlank()) return null;
+        try {
+            return objectMapper.readValue(optionsJson, List.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> parseTests(String testsJson) {
+        if (testsJson == null || testsJson.isBlank()) return List.of();
+        try {
+            return objectMapper.readValue(testsJson, List.class);
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    private String toJsonOrNull(Object value) {
+        if (value == null) return null;
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private List<Question> generateOrFallbackQuestions(Long userId, String subject, String difficulty,
+                                                         int round, String mode, List<String> exclude) {
         try {
             List<String> skills = resumeRepository.findByUserIdOrderByUploadedAtDesc(userId).stream()
                     .findFirst()
@@ -84,7 +124,12 @@ public class SessionService {
                             Arrays.asList(r.getParsedSkills().split(",")))
                     .orElse(List.of());
 
-            var generated = aiEngineClient.generateQuestions(subject, difficulty, skills);
+            // Cap the exclude list sent over the wire - after many sessions this
+            // could otherwise grow unbounded.
+            List<String> excludeCapped = exclude.size() > 50
+                    ? exclude.subList(exclude.size() - 50, exclude.size()) : exclude;
+
+            var generated = aiEngineClient.generateQuestions(subject, difficulty, skills, round, mode, excludeCapped);
             List<Question> saved = new ArrayList<>();
             for (var g : generated) {
                 Question q = new Question();
@@ -94,6 +139,21 @@ public class SessionService {
                 @SuppressWarnings("unchecked")
                 List<String> keywords = (List<String>) g.get("keywords");
                 q.setIdealAnswerKeywords(keywords == null ? "" : String.join(",", keywords));
+
+                String qType = (String) g.get("type");
+                if ("mcq".equals(qType)) {
+                    q.setType("mcq");
+                    q.setOptionsJson(toJsonOrNull(g.get("options")));
+                    Object answerIndex = g.get("answerIndex");
+                    if (answerIndex instanceof Number n) q.setAnswerIndex(n.intValue());
+                } else if ("code".equals(qType)) {
+                    q.setType("code");
+                    q.setStarterCode((String) g.get("starterCode"));
+                    q.setLanguage((String) g.get("language"));
+                    q.setFunctionName((String) g.get("functionName"));
+                    q.setTestsJson(toJsonOrNull(g.get("tests")));
+                }
+
                 saved.add(questionRepository.save(q));
             }
             if (!saved.isEmpty()) return saved;
@@ -129,24 +189,54 @@ public class SessionService {
 
         double score;
         String feedback;
-        try {
-            List<String> keywords = question.getIdealAnswerKeywords() == null ? List.of() :
-                    Arrays.asList(question.getIdealAnswerKeywords().split(","));
-            var result = aiEngineClient.evaluateAnswer(question.getQuestionText(), req.answerText(), keywords);
-            score = ((Number) result.get("score")).doubleValue();
-            feedback = (String) result.getOrDefault("feedback", "Answer evaluated.");
-            Object suggestion = result.get("suggestion");
-            if (suggestion != null && !String.valueOf(suggestion).isBlank()) {
-                feedback = feedback + " Suggestion: " + suggestion;
+
+        if ("mcq".equals(question.getType())) {
+            Integer correctIndex = question.getAnswerIndex();
+            Integer submittedIndex = null;
+            try {
+                submittedIndex = req.answerText() == null ? null : Integer.valueOf(req.answerText().trim());
+            } catch (NumberFormatException ignored) {
+                // leave null - treated as wrong/unanswered below
             }
-        } catch (Exception e) {
-            // Fallback heuristic: crude keyword overlap so the flow still works offline/AI-down.
-            List<String> keywords = question.getIdealAnswerKeywords() == null ? List.of() :
-                    Arrays.asList(question.getIdealAnswerKeywords().split(","));
-            String answerLower = req.answerText() == null ? "" : req.answerText().toLowerCase();
-            long hits = keywords.stream().filter(k -> answerLower.contains(k.trim().toLowerCase())).count();
-            score = keywords.isEmpty() ? 50.0 : Math.min(100.0, (hits * 100.0) / keywords.size());
-            feedback = "Auto-scored offline (AI engine unavailable) - review manually if this looks off.";
+            boolean correct = correctIndex != null && correctIndex.equals(submittedIndex);
+            score = correct ? 100.0 : 0.0;
+            List<String> options = parseOptions(question.getOptionsJson());
+            String correctText = (options != null && correctIndex != null && correctIndex < options.size())
+                    ? options.get(correctIndex) : null;
+            feedback = correct ? "Correct." :
+                    (correctText != null ? "Incorrect. The correct answer was: " + correctText : "Incorrect.");
+        } else if ("code".equals(question.getType())) {
+            try {
+                List<Map<String, Object>> tests = parseTests(question.getTestsJson());
+                var result = aiEngineClient.evaluateCode(question.getLanguage(), req.answerText(),
+                        question.getFunctionName(), tests);
+                Object scoreObj = result.get("score");
+                score = scoreObj instanceof Number n ? n.doubleValue() : 0.0;
+                feedback = (String) result.getOrDefault("feedback", "Code evaluated.");
+            } catch (Exception e) {
+                score = 0.0;
+                feedback = "Could not auto-grade this code (AI engine unavailable) - review manually if this looks off.";
+            }
+        } else {
+            try {
+                List<String> keywords = question.getIdealAnswerKeywords() == null ? List.of() :
+                        Arrays.asList(question.getIdealAnswerKeywords().split(","));
+                var result = aiEngineClient.evaluateAnswer(question.getQuestionText(), req.answerText(), keywords);
+                score = ((Number) result.get("score")).doubleValue();
+                feedback = (String) result.getOrDefault("feedback", "Answer evaluated.");
+                Object suggestion = result.get("suggestion");
+                if (suggestion != null && !String.valueOf(suggestion).isBlank()) {
+                    feedback = feedback + " Suggestion: " + suggestion;
+                }
+            } catch (Exception e) {
+                // Fallback heuristic: crude keyword overlap so the flow still works offline/AI-down.
+                List<String> keywords = question.getIdealAnswerKeywords() == null ? List.of() :
+                        Arrays.asList(question.getIdealAnswerKeywords().split(","));
+                String answerLower = req.answerText() == null ? "" : req.answerText().toLowerCase();
+                long hits = keywords.stream().filter(k -> answerLower.contains(k.trim().toLowerCase())).count();
+                score = keywords.isEmpty() ? 50.0 : Math.min(100.0, (hits * 100.0) / keywords.size());
+                feedback = "Auto-scored offline (AI engine unavailable) - review manually if this looks off.";
+            }
         }
 
         sq.setUserAnswerText(req.answerText());

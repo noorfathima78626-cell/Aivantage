@@ -1,0 +1,10 @@
+ALTER TABLE interview_sessions ADD COLUMN interview_type VARCHAR(30) NOT NULL DEFAULT 'One-on-One';
+ALTER TABLE interview_sessions ADD COLUMN round_number INT NOT NULL DEFAULT 1;
+ALTER TABLE questions ADD COLUMN question_type VARCHAR(20) NOT NULL DEFAULT 'verbal';
+ALTER TABLE questions ADD COLUMN options_json TEXT NULL;
+ALTER TABLE questions ADD COLUMN answer_index INT NULL;
+ALTER TABLE questions ADD COLUMN language VARCHAR(30) NULL;
+ALTER TABLE questions ADD COLUMN starter_code TEXT NULL;
+ALTER TABLE questions ADD COLUMN solution_code TEXT NULL;
+ALTER TABLE questions ADD COLUMN tests_json TEXT NULL;
+CREATE INDEX idx_interview_sessions_user_subject_type_round ON interview_sessions(user_id, subject, interview_type, round_number);

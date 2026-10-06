@@ -32,6 +32,9 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(name = "profile_type", length = 40)
+    private String profileType = "Student";
+
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 }

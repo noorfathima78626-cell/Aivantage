@@ -1,0 +1,26 @@
+AIVANTAGE — FINAL TASK LIST PATCH
+
+Drag/drop the contents of this patch into the existing project folder and replace files when asked.
+Do NOT delete your existing files.
+
+After copying:
+1. Run database/migrations/profile_type_and_server_capacity.sql once in MySQL Workbench.
+2. Restart backend.
+3. Restart AI engine.
+4. Restart frontend with your normal npm run dev:mac command.
+
+Important: this patch intentionally does NOT include application.properties, so your existing MySQL password and local settings are not overwritten.
+
+Included fixes:
+- Coding questions for every listed subject, including System Design and HR/Behavioral.
+- Round 1/2/3 use different MCQ slices and different coding questions.
+- Coding questions are automatically checked where executable; JavaScript, Java, Python and SQL are supported, with structured fallback checks for design-style code.
+- Coding feedback shows failed test, wrong line when available, expected output, actual output and what to change.
+- Coding editor remains black while typing.
+- Phone detection uses repeated object-detection hits instead of a single noisy frame.
+- Audio chunks are converted to WAV before the third-party/whisper detector receives them.
+- Round 2/3 no longer sends the user through the Round-1 camera/speaker check page.
+- History hides unfinished/in-progress sessions and offers direct Start Round 2/3 actions.
+- Registration distinguishes Student, Fresher/Recent Graduate, Working Professional, Ex-Employee/Career Returner and Other.
+- AI MediaPipe processing is protected for concurrent requests.
+- The previous InterviewRoundProgressService lambda compilation issue is included in its corrected form.
